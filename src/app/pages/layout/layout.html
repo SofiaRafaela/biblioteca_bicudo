@@ -1,0 +1,36 @@
+<div class="mobile-scrim" [class.show]="sidebarOpen" (click)="closeSidebar()"></div>
+
+<div class="app">
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="brand">
+      <div class="stamp">MB<br />BIB</div>
+      <div>
+        <h1>Biblioteca<br />Monsenhor Bicudo</h1>
+        <p>CONTROLE DO ACERVO</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a routerLink="home" routerLinkActive="active" (click)="closeSidebar()">▦ Dashboard</a>
+      <a routerLink="emprestimos" routerLinkActive="active" (click)="closeSidebar()">↔ Empréstimos</a>
+      <a routerLink="historico" routerLinkActive="active" (click)="closeSidebar()">◷ Histórico</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      Uso administrativo da biblioteca<br />
+      Consulta de acervo · empréstimos · devoluções
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="btn menu" (click)="toggleSidebar()">☰</button>
+      <div class="user">
+        <div class="avatar">AD</div>
+        <div><strong>Administrador</strong><span>Acesso ao sistema</span></div>
+      </div>
+    </header>
+
+    <router-outlet></router-outlet>
+  </main>
+</div>

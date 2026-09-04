@@ -1,0 +1,18 @@
+<h2>Histórico</h2>
+
+<table>
+  <thead>
+    <tr><th>Data</th><th>Tipo</th><th>RA</th><th>Usuário</th><th>Livro</th></tr>
+  </thead>
+  <tbody>
+    @for (ev of eventos(); track ev.data + ev.tipo + ev.ra) {
+      <tr>
+        <td>{{ ev.data }}</td>
+        <td>{{ ev.tipo }}</td>
+        <td>{{ ev.ra }}</td>
+        <td>{{ ev.usuario }}</td>
+        <td>{{ ev.livro }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
