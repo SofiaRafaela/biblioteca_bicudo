@@ -11,9 +11,18 @@
     </div>
 
     <nav class="nav">
+      <div class="nav-label">Visão geral</div>
       <a routerLink="home" routerLinkActive="active" (click)="closeSidebar()">▦ Dashboard</a>
+
+      <div class="nav-label">Cadastros</div>
+      <a routerLink="livros" routerLinkActive="active" (click)="closeSidebar()">▤ Livros</a>
+
+      <div class="nav-label">Circulação</div>
       <a routerLink="emprestimos" routerLinkActive="active" (click)="closeSidebar()">↔ Empréstimos</a>
       <a routerLink="historico" routerLinkActive="active" (click)="closeSidebar()">◷ Histórico</a>
+
+      <div class="nav-label">Ajuda</div>
+      <a routerLink="tutoriais" routerLinkActive="active" (click)="closeSidebar()">◉ Tutoriais</a>
     </nav>
 
     <div class="sidebar-foot">

@@ -1,0 +1,59 @@
+<header class="topbar">
+  <div>
+    <h2>Tutoriais</h2>
+    <div class="sub">Passo a passo de como usar o sistema</div>
+  </div>
+</header>
+
+<div class="topicos">
+  @for (topico of topicos; track topico.titulo; let i = $index) {
+    <div class="topico panel" [class.aberto]="topicoAberto() === i">
+      <button class="topico-head" (click)="alternar(i)">
+        <span class="icone">{{ topico.icone }}</span>
+        <span class="titulo">{{ topico.titulo }}</span>
+        <span class="seta">{{ topicoAberto() === i ? '▾' : '▸' }}</span>
+      </button>
+
+      @if (topicoAberto() === i) {
+        <div class="panel-body">
+          <div class="flow">
+            @for (passo of topico.passos; track passo.titulo; let j = $index) {
+              <div class="flow-step">
+                <b>{{ j + 1 }}</b>
+                <strong>{{ passo.titulo }}</strong>
+                <span>{{ passo.descricao }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<div class="panel faq">
+  <div class="panel-head">
+    <h3>Perguntas frequentes</h3>
+  </div>
+  <div class="panel-body">
+    @for (item of perguntas; track item.p) {
+      <div class="faq-item">
+        <strong>{{ item.p }}</strong>
+        <p>{{ item.r }}</p>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="panel contato">
+  <div class="panel-body">
+    <div class="contato-icone">💬</div>
+    <div class="contato-texto">
+      <strong>Ainda com dúvidas?</strong>
+      <span>Chame o desenvolvedor pelo WhatsApp e a gente resolve rapidinho.</span>
+    </div>
+    <a class="btn brass" href="https://wa.me/5514998483106?text=Oi!%20Estou%20com%20uma%20d%C3%BAvida%20no%20sistema%20da%20Biblioteca%20Monsenhor%20Bicudo." target="_blank" rel="noopener">
+      Chamar no WhatsApp
+    </a>
+  </div>
+</div>

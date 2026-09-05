@@ -1,0 +1,43 @@
+<header class="topbar">
+  <div>
+    <h2>Livros</h2>
+    <div class="sub">Consulta e controle dos títulos do acervo</div>
+  </div>
+</header>
+
+<input class="field search" placeholder="Buscar por título, autor ou ISBN" [(ngModel)]="busca" name="busca" />
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Categoria</th>
+        <th>Ano</th>
+        <th>ISBN</th>
+        <th>Exemplares</th>
+        <th>Disponíveis</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (livro of livrosFiltrados(); track livro.id) {
+        <tr>
+          <td><strong>{{ livro.title }}</strong></td>
+          <td>{{ biblioteca.autor(livro.authorId)?.name || '—' }}</td>
+          <td>{{ biblioteca.categoria(livro.categoryId)?.name || '—' }}</td>
+          <td>{{ livro.year || '—' }}</td>
+          <td>{{ livro.isbn || '—' }}</td>
+          <td>{{ totalExemplares(livro.id) }}</td>
+          <td>
+            <span class="badge" [class.ok]="exemplaresDisponiveis(livro.id) > 0" [class.gray]="exemplaresDisponiveis(livro.id) === 0">
+              {{ exemplaresDisponiveis(livro.id) }}
+            </span>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7"><div class="empty">Nenhum livro encontrado.</div></td></tr>
+      }
+    </tbody>
+  </table>
+</div>

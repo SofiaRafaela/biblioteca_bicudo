@@ -1,1 +1,132 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   COLE ISSO NO SEU src/styles.scss (no topo, ou substitua tudo)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --kraft: #e5d8bc;
+  --card: #faf5e7;
+  --line: #cbb98c;
+  --ink: #2a231a;
+  --soft: #5c5140;
+  --green: #17301f;
+  --green2: #24422c;
+  --brass: #96682a;
+  --brass-light: #c99f4f;
+  --red: #8c2f22;
+  --ok: #2b5c37;
+  --white: #f8f2e2;
+  --radius: 6px;
+  --shadow: 0 1px 0 rgba(42, 35, 26, .1), 0 10px 24px -14px rgba(42, 35, 26, .45);
+  --mono: 'IBM Plex Mono', monospace;
+  --body: 'Newsreader', Georgia, serif;
+  --display: 'Special Elite', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--kraft);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--body);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 400; }
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+.btn {
+  border: 1px solid var(--ink);
+  background: var(--card);
+  color: var(--ink);
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 16px -10px rgba(42, 35, 26, .3);
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  text-decoration: none;
+
+  &:hover { transform: translateY(-1px); }
+  &.primary { background: var(--green); color: var(--white); border-color: var(--green); }
+  &.brass { background: var(--brass); color: #fff; border-color: var(--brass); }
+  &.ghost { background: transparent; border-color: var(--line); box-shadow: none; }
+  &.danger { background: transparent; color: var(--red); border-color: var(--red); box-shadow: none; }
+  &.small { font-size: 11px; padding: 6px 9px; }
+  &:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+}
+
+.field {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  color: var(--ink);
+
+  &:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.panel-head {
+  padding: 14px 17px;
+  border-bottom: 1px dashed var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  h3 { margin: 0; font-size: 14px; color: var(--green); }
+}
+.panel-body { padding: 16px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+  border-radius: 10px;
+  font: 9.5px var(--mono);
+  text-transform: uppercase;
+
+  &.ok { color: var(--ok); border-color: #6e9379; background: #eef5ee; }
+  &.red { color: var(--red); border-color: #bc766b; background: #fdf0ee; }
+  &.gray { color: var(--soft); background: #f2ede2; }
+}
+
+.table-wrap {
+  overflow: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+table { width: 100%; border-collapse: collapse; min-width: 620px; font-size: 13px; }
+th {
+  text-align: left;
+  font: 10px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--soft);
+  padding: 12px 13px;
+  border-bottom: 2px solid var(--line);
+  white-space: nowrap;
+}
+td { padding: 11px 13px; border-bottom: 1px solid rgba(203, 185, 140, .5); vertical-align: middle; }
+tr:hover td { background: rgba(150, 104, 42, .06); }
+tr:last-child td { border-bottom: 0; }
+
+.empty { text-align: center; color: var(--soft); padding: 32px 15px; }

@@ -1,20 +1,82 @@
-<h2>Dashboard</h2>
+<header class="topbar">
+  <div>
+    <h2>Dashboard</h2>
+    <div class="sub">Controle geral do acervo e da circulação</div>
+  </div>
+  <div class="user">
+    <div class="avatar">AD</div>
+    <div><strong>Administrador</strong><span>Acesso ao sistema</span></div>
+  </div>
+</header>
 
 <div class="stats">
   <div class="stat">
     <div class="label">Livros cadastrados</div>
     <div class="value">{{ biblioteca.livros().length }}</div>
-  </div>
-  <div class="stat">
-    <div class="label">Exemplares disponíveis</div>
-    <div class="value">{{ biblioteca.exemplaresDisponiveis().length }}</div>
+    <div class="detail">Títulos disponíveis no catálogo</div>
   </div>
   <div class="stat">
     <div class="label">Empréstimos ativos</div>
     <div class="value">{{ biblioteca.emprestimosAtivos().length }}</div>
+    <div class="detail">Livros atualmente em circulação</div>
   </div>
   <div class="stat warn">
     <div class="label">Atrasados</div>
     <div class="value">{{ biblioteca.emprestimosAtrasados().length }}</div>
+    <div class="detail">Precisam de acompanhamento</div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Fluxo do projeto</h3>
+    </div>
+    <div class="panel-body">
+      <div class="flow">
+        <div class="flow-step">
+          <b>1</b>
+          <strong>Cadastrar RA</strong>
+          <span>O administrador encontra ou cadastra o aluno pelo RA.</span>
+        </div>
+        <div class="flow-step">
+          <b>2</b>
+          <strong>Consultar livro</strong>
+          <span>Busca por título, autor ou ISBN.</span>
+        </div>
+        <div class="flow-step">
+          <b>3</b>
+          <strong>Registrar retirada</strong>
+          <span>O empréstimo fica vinculado ao RA e ao exemplar.</span>
+        </div>
+        <div class="flow-step">
+          <b>4</b>
+          <strong>Devolver e controlar</strong>
+          <span>A devolução libera o exemplar e atualiza o histórico.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Últimas movimentações</h3>
+      <span class="badge gray">{{ biblioteca.emprestimos().length }}</span>
+    </div>
+    <div class="panel-body">
+      @for (emp of ultimasMovimentacoes(); track emp.id) {
+        <div class="mini">
+          <span>
+            <strong>{{ livroDoEmprestimo(emp)?.title }}</strong><br />
+            <small>RA {{ usuarioDoEmprestimo(emp)?.ra }} · {{ usuarioDoEmprestimo(emp)?.name }}</small>
+          </span>
+          <span class="badge" [class.ok]="emp.status === 'ativo'" [class.red]="emp.status === 'atrasado'" [class.gray]="emp.status === 'devolvido'">
+            {{ emp.status }}
+          </span>
+        </div>
+      } @empty {
+        <div class="empty">Nenhuma movimentação ainda.</div>
+      }
+    </div>
   </div>
 </div>
