@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { BibliotecaService } from '../../services/biblioteca';
 import { Emprestimo } from '../../models/biblioteca.models';
+import { DashboardService, DashboardData } from '../../services/dashboard';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +9,21 @@ import { Emprestimo } from '../../models/biblioteca.models';
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   biblioteca = inject(BibliotecaService);
+  private dashboardService = inject(DashboardService);
+
+  dashboard = signal<DashboardData | null>(null);
 
   constructor() {
     this.biblioteca.atualizarStatusAtrasados();
+  }
+
+  ngOnInit() {
+    this.dashboardService.getDashboard().subscribe({
+      next: (data) => this.dashboard.set(data),
+      error: (err) => console.error('Erro ao carregar dashboard:', err),
+    });
   }
 
   // Achados auxiliares para exibir o livro/usuário de um empréstimo

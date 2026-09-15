@@ -12,17 +12,22 @@
 <div class="stats">
   <div class="stat">
     <div class="label">Livros cadastrados</div>
-    <div class="value">{{ biblioteca.livros().length }}</div>
+    <div class="value">{{ dashboard()?.livros_cadastrados ?? '—' }}</div>
     <div class="detail">Títulos disponíveis no catálogo</div>
   </div>
   <div class="stat">
+    <div class="label">Exemplares disponíveis</div>
+    <div class="value">{{ dashboard()?.exemplares_disponiveis ?? '—' }}</div>
+    <div class="detail">Cópias prontas para empréstimo</div>
+  </div>
+  <div class="stat">
     <div class="label">Empréstimos ativos</div>
-    <div class="value">{{ biblioteca.emprestimosAtivos().length }}</div>
+    <div class="value">{{ dashboard()?.emprestimos_ativos ?? '—' }}</div>
     <div class="detail">Livros atualmente em circulação</div>
   </div>
   <div class="stat warn">
     <div class="label">Atrasados</div>
-    <div class="value">{{ biblioteca.emprestimosAtrasados().length }}</div>
+    <div class="value">{{ dashboard()?.atrasados ?? '—' }}</div>
     <div class="detail">Precisam de acompanhamento</div>
   </div>
 </div>
