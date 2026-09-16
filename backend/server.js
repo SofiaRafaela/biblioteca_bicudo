@@ -12,6 +12,7 @@ app.use('/api/livros', require('./routes/livros'));
 app.use('/api/exemplares', require('./routes/exemplares'));
 app.use('/api/emprestimos', require('./routes/emprestimos'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/auth', require('./auth'));
 
 // Rota de teste rápido
 app.get('/', (req, res) => {

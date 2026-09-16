@@ -1,7 +1,331 @@
-// Definindo a variável
-$cor-de-fundo-principal: #3498db;
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 
-// Aplicando no elemento
-body {
-  background-color: $cor-de-fundo-principal;
+:root {
+  --verde: #24422c;
+  --verde-escuro: #24422c;
+  --dourado: #b18a3a;
+  --dourado-claro: #d2b15a;
+}
+
+.site {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+
+.brand-panel {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 60px 120px;
+  color: var(--verde);
+  background-color: #fff5d8;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 680px;
+  text-align: center;
+  transform: translateY(-20px);
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 25px;
+  border-radius: 50%;
+  border: 5px solid var(--verde);
+  outline: 4px solid var(--dourado);
+  background: white;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, .15);
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mini-title {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 7px;
+  margin-bottom: 10px;
+}
+
+.brand-content h1 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(45px, 5vw, 75px);
+  font-weight: 600;
+  line-height: .85;
+  letter-spacing: 2px;
+}
+
+.brand-content h1 strong {
+  display: block;
+  margin-top: 15px;
+  font-size: .63em;
+  letter-spacing: 13px;
+}
+
+.ornamento {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 25px 0;
+  color: var(--dourado);
+}
+
+.ornamento span {
+  width: 85px;
+  height: 2px;
+  background: var(--dourado);
+}
+
+.ornamento b {
+  font-size: 40px;
+}
+
+.frase {
+  max-width: 500px;
+  margin: auto;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(23px, 2.4vw, 31px);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.frase em {
+  color: #ac7b1e;
+}
+
+.login-panel {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 45px;
+  background: linear-gradient(135deg, #1d4935 0%, #214b37 50%, #193d2d 100%);
+}
+
+.login-card {
+  width: min(570px, 100%);
+  padding: 35px 40px 25px;
+  border-radius: 23px;
+  border: 1px solid rgba(220, 235, 220, .20);
+  background-color: #24422c;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .3);
+  backdrop-filter: blur(15px);
+}
+
+.subtitulo {
+  display: block;
+  color: var(--dourado-claro);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.cabecalho h2 {
+  margin-top: 5px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 50px;
+  line-height: 1;
+  color: white;
+}
+
+.cabecalho p {
+  margin-top: 8px;
+  color: #c1cdc5;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.abas {
+  display: flex;
+  gap: 42px;
+  margin-top: 27px;
+  border-bottom: 1px solid rgba(220, 235, 220, .2);
+}
+
+.aba {
+  position: relative;
+  border: none;
+  background: transparent;
+  color: #aebdb3;
+  padding: 0 10px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.aba.ativa {
+  color: white;
+}
+
+.aba.ativa::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 5px;
+  background: var(--dourado-claro);
+}
+
+.campo {
+  margin-top: 18px;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container input {
+  width: 100%;
+  height: 52px;
+  padding: 0 20px;
+  border: 1px solid rgba(220, 235, 220, .24);
+  border-radius: 14px;
+  outline: none;
+  background: rgba(0, 28, 21, .25);
+  color: white;
+  font-size: 14px;
+}
+
+.input-container input::placeholder {
+  color: #82948a;
+}
+
+.input-container input:focus {
+  border-color: var(--dourado-claro);
+  box-shadow: 0 0 0 3px rgba(241, 210, 123, .08);
+}
+
+.mostrar-senha {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #aebdb3;
+  cursor: pointer;
+}
+
+.botao {
+  width: 100%;
+  height: 58px;
+  margin-top: 22px;
+  border: none;
+  border-radius: 35px;
+  background: linear-gradient(135deg, #f2d37c, #d7ad48);
+  color: #073d2c;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+  transition: .2s;
+}
+
+.botao:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.botao:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.mensagem {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(241, 210, 123, .1);
+  border: 1px solid rgba(241, 210, 123, .25);
+  color: #f1dda5;
+  font-size: 12px;
+}
+
+.esqueci {
+  display: block;
+  margin: 17px auto 0;
+  border: none;
+  background: transparent;
+  color: #c1cdc5;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .site {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-panel {
+    min-height: 520px;
+  }
+
+  .login-panel {
+    min-height: 650px;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand-panel {
+    padding: 30px 20px 90px;
+  }
+
+  .logo {
+    width: 115px;
+    height: 115px;
+  }
+
+  .brand-content h1 {
+    font-size: 42px;
+  }
+
+  .brand-content h1 strong {
+    font-size: 25px;
+    letter-spacing: 8px;
+  }
+
+  .frase {
+    font-size: 20px;
+  }
+
+  .login-panel {
+    padding: 20px 15px;
+  }
+
+  .login-card {
+    padding: 28px 22px 24px;
+  }
+
+  .cabecalho h2 {
+    font-size: 40px;
+  }
 }

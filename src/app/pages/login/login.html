@@ -1,2 +1,116 @@
-<p>TELA PRINCIPAL</p>
-<body></body>
+<main class="site">
+
+    <section class="brand-panel">
+        <div class="brand-content">
+
+            <div class="logo">
+                <img src="assets/logo.png" alt="Logo Biblioteca Educacional Bicudo">
+            </div>
+
+            <p class="mini-title">BIBLIOTECA</p>
+
+            <h1>
+                EDUCACIONAL
+                <strong>BICUDO</strong>
+            </h1>
+
+            <div class="ornamento">
+                <span></span>
+                <b>✦</b>
+                <span></span>
+            </div>
+
+            <p class="frase">
+                "A leitura do mundo precede
+                <em>a leitura da palavra"</em> - Paulo Freire
+            </p>
+
+        </div>
+    </section>
+
+    <section class="login-panel">
+        <div class="login-card">
+
+            <div class="cabecalho">
+                <span class="subtitulo">BIBLIOTECA EDUCACIONAL BICUDO</span>
+
+                <h2>{{ modo() === 'entrar' ? 'Bem-vindo(a)!' : 'Crie sua conta' }}</h2>
+
+                <p>
+                    {{ modo() === 'entrar'
+                    ? 'Acesse sua conta para continuar sua jornada de aprendizado.'
+                    : 'Cadastre-se para acessar a Biblioteca Educacional Bicudo.' }}
+                </p>
+            </div>
+
+            <div class="abas">
+                <button type="button" class="aba" [class.ativa]="modo() === 'entrar'" (click)="irParaEntrar()">
+                    Entrar
+                </button>
+                <button type="button" class="aba" [class.ativa]="modo() === 'cadastrar'" (click)="irParaCadastrar()">
+                    Cadastrar
+                </button>
+            </div>
+
+            <form (ngSubmit)="onSubmit()">
+
+                @if (modo() === 'cadastrar') {
+                <div class="campo">
+                    <label for="nome">Nome</label>
+                    <div class="input-container">
+                        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" [(ngModel)]="nome"
+                            required>
+                    </div>
+                </div>
+                }
+
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <div class="input-container">
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" [(ngModel)]="email"
+                            required>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <div class="input-container">
+                        <input [type]="senhaVisivel ? 'text' : 'password'" id="senha" name="senha"
+                            placeholder="Digite sua senha" [(ngModel)]="senha" required>
+                        <button type="button" class="mostrar-senha" (click)="alternarSenha()">
+                            {{ senhaVisivel ? '◌' : '◉' }}
+                        </button>
+                    </div>
+                </div>
+
+                @if (modo() === 'cadastrar') {
+                <div class="campo confirmar" style="display: block;">
+                    <label for="confirmarSenha">Confirmar senha</label>
+                    <div class="input-container">
+                        <input type="password" id="confirmarSenha" name="confirmarSenha"
+                            placeholder="Digite novamente sua senha" [(ngModel)]="confirmarSenha">
+                    </div>
+                </div>
+                }
+
+                <button type="submit" class="botao" [disabled]="carregando()">
+                    <span></span>
+                    {{ modo() === 'entrar' ? 'Entrar no Sistema' : 'Criar minha conta' }}
+                </button>
+
+                @if (mensagem()) {
+                <div class="mensagem" style="display: block;">{{ mensagem() }}</div>
+                }
+
+                @if (modo() === 'entrar') {
+                <button type="button" class="esqueci" (click)="esqueciSenha()">
+                    Esqueceu sua senha?
+                </button>
+                }
+
+            </form>
+
+        </div>
+    </section>
+
+</main>
