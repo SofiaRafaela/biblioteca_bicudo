@@ -1,0 +1,103 @@
+const express = require('express');
+const router = express.Router();
+
+const ISBN_REGEX = /^(97[89])?\d{9}[\dX]$/i;
+
+function validarIsbn(rawIsbn) {
+    const isbn = (rawIsbn || '').replace(/[-\s]/g, '').trim();
+    if (!isbn || !ISBN_REGEX.test(isbn)) return null;
+    return isbn;
+}
+
+async function fetchOpenLibrary(isbn) {
+    try {
+        const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
+
+        const res = await fetch(url);
+        if (!res.ok) {
+            console.error('Open Library respondeu com status:', res.status);
+            return null;
+        }
+        const data = await res.json();
+
+        const item = data[`ISBN:${isbn}`];
+        if (!item) return null;
+
+        const authors = item.authors;
+        const publishers = item.publishers;
+        const cover = item.cover || {};
+        const notes = item.notes;
+
+        return {
+            title: item.title || null,
+            authors: authors ? authors.map(a => a.name).join(', ') : 'Não informado',
+            publisher: publishers ? publishers.map(p => p.name).join(', ') : 'Não informada',
+            date: item.publish_date || 'Não informada',
+            pages: item.number_of_pages ? `${item.number_of_pages} páginas` : 'Não informado',
+            description: typeof notes === 'string' ? notes : (item.subtitle || 'Sinopse não disponível.'),
+            image: cover.large || cover.medium || `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`,
+        };
+    } catch (err) {
+        console.error('Erro Open Library:', err.message);
+        return null;
+    }
+}
+
+async function fetchGoogleBooks(isbn) {
+    try {
+        const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+            console.error('Google Books respondeu com status:', res.status);
+            return null;
+        }
+        const data = await res.json();
+
+        const items = data.items;
+        if (!items || items.length === 0) return null;
+
+        const info = items[0].volumeInfo || {};
+        const imageLinks = info.imageLinks || {};
+        const thumbnail = imageLinks.thumbnail || '';
+        const authors = info.authors;
+
+        return {
+            title: info.title || null,
+            authors: authors ? authors.join(', ') : 'Não informado',
+            publisher: info.publisher || 'Não informada',
+            date: info.publishedDate || 'Não informada',
+            pages: info.pageCount ? `${info.pageCount} páginas` : 'Não informado',
+            description: info.description || 'Sinopse não disponível.',
+            image: thumbnail ? thumbnail.replace('http://', 'https://') : '',
+        };
+    } catch (err) {
+        console.error('Erro Google Books:', err.message);
+        return null;
+    }
+}
+
+async function searchBook(rawIsbn) {
+    const isbn = validarIsbn(rawIsbn);
+    if (!isbn) {
+        throw new Error('Por favor, informe um código ISBN válido de 10 ou 13 dígitos.');
+    }
+
+    let book = await fetchOpenLibrary(isbn);
+    if (!book) book = await fetchGoogleBooks(isbn);
+    if (!book) throw new Error('Nenhum livro encontrado para este ISBN.');
+
+    book.isbn = isbn;
+    return book;
+}
+
+// GET /api/buscar/:isbn
+router.get('/:isbn', async (req, res) => {
+    try {
+        const book = await searchBook(req.params.isbn);
+        res.json(book);
+    } catch (err) {
+        res.status(400).json({ erro: err.message });
+    }
+});
+
+module.exports = router;
