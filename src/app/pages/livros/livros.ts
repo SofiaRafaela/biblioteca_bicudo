@@ -2,11 +2,13 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BibliotecaService } from '../../services/biblioteca';
 import { CadastrarLivroComponent } from './cadastrar-livro/cadastrar-livro';
+import { DetalheLivroComponent } from './detalhe-livro/detalhe-livro';
+import { Livro } from '../../models/biblioteca.models';
 
 @Component({
   selector: 'app-livros',
   standalone: true,
-  imports: [FormsModule, CadastrarLivroComponent],
+  imports: [FormsModule, CadastrarLivroComponent, DetalheLivroComponent],
   templateUrl: './livros.html',
   styleUrl: './livros.scss',
 })
@@ -14,7 +16,8 @@ export class LivrosComponent {
   biblioteca = inject(BibliotecaService);
 
   busca = signal('');
-  mostrarModal = signal(false);
+  mostrarModalCadastro = signal(false);
+  livroSelecionado = signal<Livro | null>(null);
 
   livrosFiltrados = computed(() => {
     const q = this.busca().trim().toLowerCase();
@@ -35,11 +38,19 @@ export class LivrosComponent {
     return this.biblioteca.exemplaresDisponiveisDoLivro(bookId).length;
   }
 
-  abrirModal(): void {
-    this.mostrarModal.set(true);
+  abrirCadastro(): void {
+    this.mostrarModalCadastro.set(true);
   }
 
-  fecharModal(): void {
-    this.mostrarModal.set(false);
+  fecharCadastro(): void {
+    this.mostrarModalCadastro.set(false);
+  }
+
+  abrirDetalhe(livro: Livro): void {
+    this.livroSelecionado.set(livro);
+  }
+
+  fecharDetalhe(): void {
+    this.livroSelecionado.set(null);
   }
 }

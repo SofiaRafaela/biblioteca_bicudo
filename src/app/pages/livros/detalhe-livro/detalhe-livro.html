@@ -1,0 +1,36 @@
+<div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <button class="fechar" (click)="fecharModal()" aria-label="Fechar">×</button>
+
+        <div class="conteudo">
+            @if (livro.image) {
+            <img [src]="livro.image" [alt]="livro.title" class="capa" />
+            }
+
+            <div class="dados">
+                <h3>{{ livro.title }}</h3>
+                <p class="autor">{{ biblioteca.autor(livro.authorId)?.name || 'Autor não informado' }}</p>
+
+                <div class="meta-grid">
+                    <div><span class="rotulo">Categoria</span>{{ biblioteca.categoria(livro.categoryId)?.name || '—' }}
+                    </div>
+                    <div><span class="rotulo">Ano</span>{{ livro.year || '—' }}</div>
+                    <div><span class="rotulo">ISBN</span>{{ livro.isbn || '—' }}</div>
+                    @if (livro.publisher) {
+                    <div><span class="rotulo">Editora</span>{{ livro.publisher }}</div>
+                    }
+                    @if (livro.pages) {
+                    <div><span class="rotulo">Páginas</span>{{ livro.pages }}</div>
+                    }
+                </div>
+
+                @if (livro.description) {
+                <div class="descricao">
+                    <span class="rotulo">Sinopse</span>
+                    <p>{{ livro.description }}</p>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

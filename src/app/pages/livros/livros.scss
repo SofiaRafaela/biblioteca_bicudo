@@ -1,4 +1,8 @@
 .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   border-bottom: 1px dashed var(--line);
   padding-bottom: 18px;
   margin-bottom: 24px;
@@ -6,7 +10,27 @@
 .topbar h2 { color: var(--green); font-size: 24px; margin: 0; }
 .sub { font: 11px var(--mono); color: var(--soft); margin-top: 5px; }
 
+.btn-primario {
+  background: var(--green);
+  color: #06110c;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primario:hover { opacity: 0.9; }
+
 .search {
   width: 100%;
   margin-bottom: 15px;
+}
+
+.linha-livro {
+  cursor: pointer;
+}
+.linha-livro:hover {
+  background: rgba(255, 255, 255, 0.04);
 }

@@ -1,0 +1,100 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal {
+    position: relative;
+    background: var(--bg, #1b2620);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 28px;
+    width: 90%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.fechar {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--soft);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.conteudo {
+    display: flex;
+    gap: 20px;
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.capa {
+    width: 120px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    align-self: flex-start;
+}
+
+.dados {
+    min-width: 0;
+
+    h3 {
+        color: var(--green);
+        margin: 0 0 4px;
+    }
+
+    .autor {
+        color: var(--soft);
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+}
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+
+    .rotulo {
+        display: block;
+        font: 10px var(--mono);
+        color: var(--soft);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+    }
+}
+
+.descricao {
+    .rotulo {
+        display: block;
+        font: 10px var(--mono);
+        color: var(--soft);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+
+    p {
+        font-size: 13px;
+        line-height: 1.5;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+}

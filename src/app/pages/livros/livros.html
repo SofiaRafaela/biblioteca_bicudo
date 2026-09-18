@@ -3,7 +3,7 @@
     <h2>Livros</h2>
     <div class="sub">Consulta e controle dos títulos do acervo</div>
   </div>
-  <button class="btn-primario" (click)="abrirModal()">Cadastrar Livro</button>
+  <button class="btn-primario" (click)="abrirCadastro()">Cadastrar Livro</button>
 </header>
 
 <input class="field search" placeholder="Buscar por título, autor ou ISBN" [(ngModel)]="busca" name="busca" />
@@ -23,7 +23,7 @@
     </thead>
     <tbody>
       @for (livro of livrosFiltrados(); track livro.id) {
-        <tr>
+        <tr class="linha-livro" (click)="abrirDetalhe(livro)">
           <td><strong>{{ livro.title }}</strong></td>
           <td>{{ biblioteca.autor(livro.authorId)?.name || '—' }}</td>
           <td>{{ biblioteca.categoria(livro.categoryId)?.name || '—' }}</td>
@@ -43,6 +43,10 @@
   </table>
 </div>
 
-@if (mostrarModal()) {
-  <app-cadastrar-livro (fechar)="fecharModal()" />
+@if (mostrarModalCadastro()) {
+  <app-cadastrar-livro (fechar)="fecharCadastro()" />
+}
+
+@if (livroSelecionado()) {
+  <app-detalhe-livro [livro]="livroSelecionado()!" (fechar)="fecharDetalhe()" />
 }
