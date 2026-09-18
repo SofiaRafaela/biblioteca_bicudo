@@ -33,6 +33,11 @@
 }
 
 h3 { color: var(--green); margin: 0 0 6px; }
+
+.preview .dados h3 {
+  color: var(--cream, #f0e6c8);
+  margin-bottom: 4px;
+}
 .sub { font: 11px var(--mono); color: var(--soft); margin-bottom: 18px; }
 
 .field {
