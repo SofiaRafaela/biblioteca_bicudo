@@ -21,6 +21,7 @@ export class CadastrarLivroComponent {
   erroMsg = signal('');
   resultado = signal<DadosLivroIsbn | null>(null);
   categoriaSelecionada = signal('');
+  salvando = signal(false);
 
   buscar(): void {
     const codigo = this.isbn().trim();
@@ -45,8 +46,20 @@ export class CadastrarLivroComponent {
   confirmarCadastro(): void {
     const dados = this.resultado();
     if (!dados || !this.categoriaSelecionada()) return;
-    this.biblioteca.cadastrarLivroPorIsbn(dados, this.categoriaSelecionada());
-    this.fechar.emit();
+
+    this.salvando.set(true);
+
+    this.biblioteca.cadastrarLivroPorIsbn(dados, this.categoriaSelecionada()).subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.fechar.emit();
+      },
+      error: (err) => {
+        this.salvando.set(false);
+        this.erroMsg.set(err.error?.erro || 'Erro ao salvar o livro. Tente novamente.');
+        this.estado.set('erro');
+      },
+    });
   }
 
   tentarNovamente(): void {

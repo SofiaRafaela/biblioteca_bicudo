@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, switchMap, map } from 'rxjs';
 import {
   Autor, Categoria, Livro, Exemplar, Usuario, Emprestimo
 } from '../models/biblioteca.models';
@@ -27,35 +28,38 @@ export interface DadosLivroIsbn {
   isbn: string;
 }
 
+// Formato que vai/vem do backend (colunas em português da tabela `livros`)
+interface LivroApi {
+  id: number;
+  titulo: string;
+  autor: string;
+  isbn: string | null;
+  categoria: string | null;
+  editora: string | null;
+  ano_publicacao: number | null;
+}
+
+interface ExemplarApi {
+  id: number;
+  livro_id: number;
+  codigo_patrimonio: string | null;
+  status: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BibliotecaService {
   private http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:3000/api';
 
-  // --- Estado mockado (troca por API depois) ---
-  autores = signal<Autor[]>([
-    { id: 'aut_1', name: 'Machado de Assis', nat: 'Brasileira' },
-    { id: 'aut_2', name: 'Clarice Lispector', nat: 'Brasileira' },
-    { id: 'aut_3', name: 'José Saramago', nat: 'Portuguesa' },
-  ]);
+  autores = signal<Autor[]>([]);
 
   categorias = signal<Categoria[]>([
     { id: 'cat_1', name: 'Literatura Brasileira', desc: 'Romances e contos nacionais.' },
     { id: 'cat_2', name: 'Literatura Estrangeira', desc: 'Obras traduzidas.' },
   ]);
 
-  livros = signal<Livro[]>([
-    { id: 'bk_1', title: 'Dom Casmurro', authorId: 'aut_1', categoryId: 'cat_1', year: 1899, isbn: '9788508137416' },
-    { id: 'bk_2', title: 'A Hora da Estrela', authorId: 'aut_2', categoryId: 'cat_1', year: 1977, isbn: '9788532507860' },
-    { id: 'bk_3', title: 'Ensaio sobre a Cegueira', authorId: 'aut_3', categoryId: 'cat_2', year: 1995, isbn: '9788535911983' },
-  ]);
-
-  exemplares = signal<Exemplar[]>([
-    { id: 'ex_1', bookId: 'bk_1', code: 'MB-001-1', status: 'disponivel', condition: 'Novo' },
-    { id: 'ex_2', bookId: 'bk_1', code: 'MB-001-2', status: 'emprestado', condition: 'Bom' },
-    { id: 'ex_3', bookId: 'bk_2', code: 'MB-002-1', status: 'disponivel', condition: 'Bom' },
-    { id: 'ex_4', bookId: 'bk_3', code: 'MB-003-1', status: 'disponivel', condition: 'Novo' },
-  ]);
+  livros = signal<Livro[]>([]);
+  exemplares = signal<Exemplar[]>([]);
 
   usuarios = signal<Usuario[]>([
     { id: 'usr_1', ra: '2026001', name: 'Ana Beatriz Souza', created: today() },
@@ -65,6 +69,47 @@ export class BibliotecaService {
   emprestimos = signal<Emprestimo[]>([
     { id: 'emp_1', userId: 'usr_1', copyId: 'ex_2', loanDate: plusDays(-4), dueDate: plusDays(3), returnDate: null, status: 'ativo' },
   ]);
+
+  constructor() {
+    this.carregarLivrosEExemplares();
+  }
+
+  // --- Carregamento inicial a partir do backend ---
+
+  private carregarLivrosEExemplares(): void {
+    this.http.get<LivroApi[]>(`${this.apiUrl}/livros`).subscribe({
+      next: (rows) => this.livros.set(rows.map(row => this.mapLivroApiParaLivro(row))),
+      error: (err) => console.error('Erro ao carregar livros:', err),
+    });
+
+    this.http
+      .get<(ExemplarApi & { titulo: string; autor: string })[]>(`${this.apiUrl}/exemplares`)
+      .subscribe({
+        next: (rows) => {
+          const exemplares: Exemplar[] = rows.map(row => ({
+            id: String(row.id),
+            bookId: String(row.livro_id),
+            code: row.codigo_patrimonio || `EX-${row.id}`,
+            status: row.status as Exemplar['status'],
+            condition: 'Não informado',
+          }));
+          this.exemplares.set(exemplares);
+        },
+        error: (err) => console.error('Erro ao carregar exemplares:', err),
+      });
+  }
+
+  private mapLivroApiParaLivro(row: LivroApi): Livro {
+    return {
+      id: String(row.id),
+      title: row.titulo,
+      authorId: this.resolverAutor(row.autor || ''),
+      categoryId: this.resolverCategoria(row.categoria || ''),
+      year: row.ano_publicacao ?? undefined,
+      isbn: row.isbn ?? undefined,
+      publisher: row.editora ?? undefined,
+    };
+  }
 
   // --- Computeds úteis para as telas ---
   emprestimosAtivos = computed(() => this.emprestimos().filter(l => l.status !== 'devolvido'));
@@ -84,6 +129,10 @@ export class BibliotecaService {
 
   exemplaresDisponiveisDoLivro(bookId: string): Exemplar[] {
     return this.exemplares().filter(x => x.bookId === bookId && x.status === 'disponivel');
+  }
+
+  livroTemExemplarEmprestado(bookId: string): boolean {
+    return this.exemplares().some(x => x.bookId === bookId && x.status === 'emprestado');
   }
 
   cadastrarUsuario(ra: string, name: string): Usuario {
@@ -142,6 +191,10 @@ export class BibliotecaService {
     return this.http.get<DadosLivroIsbn>(`${this.apiUrl}/buscar/${isbn}`);
   }
 
+  dataDevolucaoPadrao(dias: number = 7): string {
+    return plusDays(dias);
+  }
+
   private resolverAutor(authorsRaw: string): string {
     const nome = (authorsRaw || '').split(',')[0].trim();
 
@@ -161,25 +214,83 @@ export class BibliotecaService {
     return novo.id;
   }
 
-  cadastrarLivroPorIsbn(dados: DadosLivroIsbn, categoryId: string): Livro {
-    const authorId = this.resolverAutor(dados.authors);
-    const anoMatch = dados.date?.match(/\d{4}/);
-    const year = anoMatch ? Number(anoMatch[0]) : undefined;
+  private resolverCategoria(nomeRaw: string): string {
+    const nome = (nomeRaw || '').trim();
 
-    const novoLivro: Livro = {
-      id: uid('bk'),
-      title: dados.title || 'Título não informado',
-      authorId,
-      categoryId,
-      year,
-      isbn: dados.isbn,
-      publisher: dados.publisher,
-      description: dados.description,
-      pages: dados.pages,
-      image: dados.image,
+    if (!nome) {
+      const generica = this.categorias().find(c => c.name === 'Categoria não informada');
+      if (generica) return generica.id;
+      const nova: Categoria = { id: uid('cat'), name: 'Categoria não informada', desc: '' };
+      this.categorias.update(list => [...list, nova]);
+      return nova.id;
+    }
+
+    const existente = this.categorias().find(c => c.name.toLowerCase() === nome.toLowerCase());
+    if (existente) return existente.id;
+
+    const nova: Categoria = { id: uid('cat'), name: nome, desc: '' };
+    this.categorias.update(list => [...list, nova]);
+    return nova.id;
+  }
+
+  /**
+   * Cadastra o livro E um exemplar no backend (MySQL) e só então
+   * atualiza os signals locais com os dados reais (ids do banco).
+   */
+  cadastrarLivroPorIsbn(dados: DadosLivroIsbn, categoryId: string): Observable<{ livro: Livro; exemplar: Exemplar }> {
+    const categoria = this.categoria(categoryId);
+    const anoMatch = dados.date?.match(/\d{4}/);
+    const ano_publicacao = anoMatch ? Number(anoMatch[0]) : null;
+    const autorNome = (dados.authors || '').split(',')[0].trim() || 'Autor não informado';
+
+    const corpoLivro = {
+      titulo: dados.title || 'Título não informado',
+      autor: autorNome,
+      isbn: dados.isbn || null,
+      categoria: categoria?.name || null,
+      editora: dados.publisher || null,
+      ano_publicacao,
     };
 
-    this.livros.update(list => [...list, novoLivro]);
-    return novoLivro;
+    return this.http.post<LivroApi>(`${this.apiUrl}/livros`, corpoLivro).pipe(
+      switchMap((livroSalvo) => {
+        const corpoExemplar = {
+          livro_id: livroSalvo.id,
+          codigo_patrimonio: `${livroSalvo.id}-1`,
+        };
+
+        return this.http.post<ExemplarApi>(`${this.apiUrl}/exemplares`, corpoExemplar).pipe(
+          map((exemplarSalvo) => {
+            const authorId = this.resolverAutor(autorNome);
+
+            const novoLivro: Livro = {
+              id: String(livroSalvo.id),
+              title: livroSalvo.titulo,
+              authorId,
+              categoryId,
+              year: livroSalvo.ano_publicacao ?? undefined,
+              isbn: livroSalvo.isbn ?? undefined,
+              publisher: livroSalvo.editora ?? undefined,
+              description: dados.description,
+              pages: dados.pages,
+              image: dados.image,
+            };
+
+            const novoExemplar: Exemplar = {
+              id: String(exemplarSalvo.id),
+              bookId: String(exemplarSalvo.livro_id),
+              code: exemplarSalvo.codigo_patrimonio || `EX-${exemplarSalvo.id}`,
+              status: 'disponivel',
+              condition: 'Novo',
+            };
+
+            this.livros.update(list => [...list, novoLivro]);
+            this.exemplares.update(list => [...list, novoExemplar]);
+
+            return { livro: novoLivro, exemplar: novoExemplar };
+          })
+        );
+      })
+    );
   }
 }

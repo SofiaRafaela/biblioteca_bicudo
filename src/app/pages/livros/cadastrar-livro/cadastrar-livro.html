@@ -45,11 +45,31 @@
               }
             </select>
           </label>
+
+          <label class="campo-emprestar">
+            <input type="checkbox" [(ngModel)]="emprestarAgora" name="emprestarAgora" />
+            Emprestar este exemplar agora
+          </label>
+
+          @if (emprestarAgora()) {
+            <input
+              class="field"
+              placeholder="RA do usuário"
+              [(ngModel)]="raEmprestimo"
+              name="raEmprestimo"
+            />
+          }
+
+          @if (erroEmprestimo()) {
+            <p class="erro-emprestimo">{{ erroEmprestimo() }}</p>
+          }
         </div>
 
         <div class="acoes">
           <button class="btn-secundario" (click)="tentarNovamente()">Buscar outro</button>
-          <button class="btn-primario" (click)="confirmarCadastro()">Confirmar Cadastro</button>
+          <button class="btn-primario" (click)="confirmarCadastro()">
+            {{ emprestarAgora() ? 'Cadastrar e Emprestar' : 'Confirmar Cadastro' }}
+          </button>
         </div>
       </div>
     }

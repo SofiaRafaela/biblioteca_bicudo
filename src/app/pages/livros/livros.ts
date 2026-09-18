@@ -5,6 +5,8 @@ import { CadastrarLivroComponent } from './cadastrar-livro/cadastrar-livro';
 import { DetalheLivroComponent } from './detalhe-livro/detalhe-livro';
 import { Livro } from '../../models/biblioteca.models';
 
+type FiltroLivros = 'cadastrados' | 'emprestados';
+
 @Component({
   selector: 'app-livros',
   standalone: true,
@@ -16,12 +18,19 @@ export class LivrosComponent {
   biblioteca = inject(BibliotecaService);
 
   busca = signal('');
+  filtro = signal<FiltroLivros>('cadastrados');
   mostrarModalCadastro = signal(false);
   livroSelecionado = signal<Livro | null>(null);
 
   livrosFiltrados = computed(() => {
     const q = this.busca().trim().toLowerCase();
-    const lista = this.biblioteca.livros();
+    const modo = this.filtro();
+    let lista = this.biblioteca.livros();
+
+    if (modo === 'emprestados') {
+      lista = lista.filter(l => this.biblioteca.livroTemExemplarEmprestado(l.id));
+    }
+
     if (!q) return lista;
     return lista.filter(l => {
       const autor = this.biblioteca.autor(l.authorId)?.name ?? '';
@@ -38,6 +47,10 @@ export class LivrosComponent {
     return this.biblioteca.exemplaresDisponiveisDoLivro(bookId).length;
   }
 
+  selecionarFiltro(valor: FiltroLivros): void {
+    this.filtro.set(valor);
+  }
+
   abrirCadastro(): void {
     this.mostrarModalCadastro.set(true);
   }
@@ -45,6 +58,8 @@ export class LivrosComponent {
   fecharCadastro(): void {
     this.mostrarModalCadastro.set(false);
   }
+
+ 
 
   abrirDetalhe(livro: Livro): void {
     this.livroSelecionado.set(livro);
