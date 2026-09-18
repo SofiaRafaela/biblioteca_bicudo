@@ -1,0 +1,57 @@
+<div class="modal-overlay" (click)="cancelar()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <button class="fechar" (click)="cancelar()" aria-label="Fechar">×</button>
+
+    @if (estado() === 'idle' || estado() === 'buscando') {
+      <h3>Cadastrar Livro</h3>
+      <p class="sub">Digite o código ISBN do livro</p>
+
+      <input
+        class="field"
+        placeholder="Ex: 9788508137416"
+        [(ngModel)]="isbn"
+        name="isbn"
+        (keyup.enter)="buscar()"
+        [disabled]="estado() === 'buscando'"
+      />
+
+      <button class="btn-primario" (click)="buscar()" [disabled]="estado() === 'buscando'">
+        {{ estado() === 'buscando' ? 'Buscando...' : 'Buscar' }}
+      </button>
+    }
+
+    @if (estado() === 'erro') {
+      <div class="erro">
+        <p>Código inválido — {{ erroMsg() }}</p>
+        <button class="btn-secundario" (click)="tentarNovamente()">Tentar outro código</button>
+      </div>
+    }
+
+    @if (estado() === 'sucesso' && resultado()) {
+      <div class="preview">
+        <img [src]="resultado()!.image" [alt]="resultado()!.title" class="capa" />
+
+        <div class="dados">
+          <h3>{{ resultado()!.title }}</h3>
+          <p class="autor">{{ resultado()!.authors }}</p>
+          <p class="meta">{{ resultado()!.publisher }} · {{ resultado()!.date }} · {{ resultado()!.pages }}</p>
+          <p class="descricao">{{ resultado()!.description }}</p>
+
+          <label class="campo-categoria">
+            Categoria
+            <select [(ngModel)]="categoriaSelecionada" name="categoria">
+              @for (cat of biblioteca.categorias(); track cat.id) {
+                <option [value]="cat.id">{{ cat.name }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="acoes">
+          <button class="btn-secundario" (click)="tentarNovamente()">Buscar outro</button>
+          <button class="btn-primario" (click)="confirmarCadastro()">Confirmar Cadastro</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -3,6 +3,7 @@
     <h2>Livros</h2>
     <div class="sub">Consulta e controle dos títulos do acervo</div>
   </div>
+  <button class="btn-primario" (click)="abrirModal()">Cadastrar Livro</button>
 </header>
 
 <input class="field search" placeholder="Buscar por título, autor ou ISBN" [(ngModel)]="busca" name="busca" />
@@ -41,3 +42,7 @@
     </tbody>
   </table>
 </div>
+
+@if (mostrarModal()) {
+  <app-cadastrar-livro (fechar)="fecharModal()" />
+}

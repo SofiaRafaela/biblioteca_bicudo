@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {
   Autor, Categoria, Livro, Exemplar, Usuario, Emprestimo
 } from '../models/biblioteca.models';
@@ -15,8 +16,22 @@ function plusDays(n: number): string {
   return new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
 }
 
+export interface DadosLivroIsbn {
+  title: string;
+  authors: string;
+  publisher: string;
+  date: string;
+  pages: string;
+  description: string;
+  image: string;
+  isbn: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BibliotecaService {
+  private http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:3000/api';
+
   // --- Estado mockado (troca por API depois) ---
   autores = signal<Autor[]>([
     { id: 'aut_1', name: 'Machado de Assis', nat: 'Brasileira' },
@@ -119,5 +134,52 @@ export class BibliotecaService {
     this.emprestimos.update(list =>
       list.map(l => (l.status !== 'devolvido' ? { ...l, status: l.dueDate < hoje ? 'atrasado' : 'ativo' } : l))
     );
+  }
+
+  // --- Cadastro de livro via ISBN ---
+
+  buscarLivroPorIsbn(isbn: string) {
+    return this.http.get<DadosLivroIsbn>(`${this.apiUrl}/buscar/${isbn}`);
+  }
+
+  private resolverAutor(authorsRaw: string): string {
+    const nome = (authorsRaw || '').split(',')[0].trim();
+
+    if (!nome || nome === 'Não informado') {
+      const generico = this.autores().find(a => a.name === 'Autor não informado');
+      if (generico) return generico.id;
+      const novo: Autor = { id: uid('aut'), name: 'Autor não informado' };
+      this.autores.update(list => [...list, novo]);
+      return novo.id;
+    }
+
+    const existente = this.autores().find(a => a.name.toLowerCase() === nome.toLowerCase());
+    if (existente) return existente.id;
+
+    const novo: Autor = { id: uid('aut'), name: nome };
+    this.autores.update(list => [...list, novo]);
+    return novo.id;
+  }
+
+  cadastrarLivroPorIsbn(dados: DadosLivroIsbn, categoryId: string): Livro {
+    const authorId = this.resolverAutor(dados.authors);
+    const anoMatch = dados.date?.match(/\d{4}/);
+    const year = anoMatch ? Number(anoMatch[0]) : undefined;
+
+    const novoLivro: Livro = {
+      id: uid('bk'),
+      title: dados.title || 'Título não informado',
+      authorId,
+      categoryId,
+      year,
+      isbn: dados.isbn,
+      publisher: dados.publisher,
+      description: dados.description,
+      pages: dados.pages,
+      image: dados.image,
+    };
+
+    this.livros.update(list => [...list, novoLivro]);
+    return novoLivro;
   }
 }

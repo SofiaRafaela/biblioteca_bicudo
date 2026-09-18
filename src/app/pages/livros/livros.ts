@@ -1,11 +1,12 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BibliotecaService } from '../../services/biblioteca';
+import { CadastrarLivroComponent } from './cadastrar-livro/cadastrar-livro';
 
 @Component({
   selector: 'app-livros',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CadastrarLivroComponent],
   templateUrl: './livros.html',
   styleUrl: './livros.scss',
 })
@@ -13,6 +14,7 @@ export class LivrosComponent {
   biblioteca = inject(BibliotecaService);
 
   busca = signal('');
+  mostrarModal = signal(false);
 
   livrosFiltrados = computed(() => {
     const q = this.busca().trim().toLowerCase();
@@ -31,5 +33,13 @@ export class LivrosComponent {
 
   exemplaresDisponiveis(bookId: string): number {
     return this.biblioteca.exemplaresDisponiveisDoLivro(bookId).length;
+  }
+
+  abrirModal(): void {
+    this.mostrarModal.set(true);
+  }
+
+  fecharModal(): void {
+    this.mostrarModal.set(false);
   }
 }

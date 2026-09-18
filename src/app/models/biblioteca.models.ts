@@ -17,6 +17,10 @@ export interface Livro {
     categoryId: string;
     year?: number;
     isbn?: string;
+    publisher?: string;
+    description?: string;
+    pages?: string;
+    image?: string;
 }
 
 export interface Exemplar {
