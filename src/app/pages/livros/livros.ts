@@ -59,7 +59,12 @@ export class LivrosComponent {
     this.mostrarModalCadastro.set(false);
   }
 
- 
+  aoCadastrar(evento: { emprestado: boolean }): void {
+    this.mostrarModalCadastro.set(false);
+    if (evento.emprestado) {
+      this.filtro.set('emprestados');
+    }
+  }
 
   abrirDetalhe(livro: Livro): void {
     this.livroSelecionado.set(livro);

@@ -15,6 +15,7 @@ export class CadastrarLivroComponent {
   biblioteca = inject(BibliotecaService);
 
   @Output() fechar = new EventEmitter<void>();
+  @Output() cadastrado = new EventEmitter<{ emprestado: boolean }>();
 
   isbn = signal('');
   estado = signal<EstadoBusca>('idle');
@@ -22,6 +23,10 @@ export class CadastrarLivroComponent {
   resultado = signal<DadosLivroIsbn | null>(null);
   categoriaSelecionada = signal('');
   salvando = signal(false);
+
+  emprestarAgora = signal(false);
+  raEmprestimo = signal('');
+  erroEmprestimo = signal('');
 
   buscar(): void {
     const codigo = this.isbn().trim();
@@ -47,12 +52,35 @@ export class CadastrarLivroComponent {
     const dados = this.resultado();
     if (!dados || !this.categoriaSelecionada()) return;
 
+    this.erroEmprestimo.set('');
+
+    // Se marcou "emprestar agora", valida o RA antes de gastar uma chamada ao backend
+    if (this.emprestarAgora() && !this.raEmprestimo().trim()) {
+      this.erroEmprestimo.set('Informe o RA do usuário para emprestar.');
+      return;
+    }
+
     this.salvando.set(true);
 
     this.biblioteca.cadastrarLivroPorIsbn(dados, this.categoriaSelecionada()).subscribe({
-      next: () => {
+      next: ({ exemplar }) => {
         this.salvando.set(false);
-        this.fechar.emit();
+
+        let emprestado = false;
+
+        if (this.emprestarAgora()) {
+          const ra = this.raEmprestimo().trim();
+          const dueDate = this.biblioteca.dataDevolucaoPadrao(7);
+          const resultado = this.biblioteca.registrarEmprestimo(ra, exemplar.id, dueDate);
+
+          if (!resultado.ok) {
+            this.erroEmprestimo.set(resultado.msg);
+            return; // livro já foi salvo, mas o empréstimo falhou — deixa o usuário corrigir o RA
+          }
+          emprestado = true;
+        }
+
+        this.cadastrado.emit({ emprestado });
       },
       error: (err) => {
         this.salvando.set(false);
@@ -67,6 +95,9 @@ export class CadastrarLivroComponent {
     this.isbn.set('');
     this.resultado.set(null);
     this.erroMsg.set('');
+    this.emprestarAgora.set(false);
+    this.raEmprestimo.set('');
+    this.erroEmprestimo.set('');
   }
 
   cancelar(): void {

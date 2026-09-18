@@ -60,7 +60,9 @@
   </table>
 </div>
 
-
+@if (mostrarModalCadastro()) {
+  <app-cadastrar-livro (fechar)="fecharCadastro()" (cadastrado)="aoCadastrar($event)" />
+}
 
 @if (livroSelecionado()) {
   <app-detalhe-livro [livro]="livroSelecionado()!" (fechar)="fecharDetalhe()" />
