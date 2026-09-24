@@ -14,6 +14,7 @@ app.use('/api/emprestimos', require('./routes/emprestimos'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/auth', require('./auth'));
 app.use('/api/buscar', require('./routes/buscar'));
+app.use('/api/usuarios', require('./routes/usuarios'));
 
 // Rota de teste rápido
 app.get('/', (req, res) => {

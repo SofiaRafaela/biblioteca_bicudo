@@ -19,20 +19,19 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/emprestimos — registra um novo empréstimo
+// POST /api/emprestimos — registra um novo empréstimo (usando usuário já cadastrado)
 router.post('/', async (req, res) => {
   const {
     exemplar_id,
-    nome_solicitante,
-    contato_solicitante,
+    usuario_id,
     data_emprestimo,
     data_prevista_devolucao,
     administrador_id
   } = req.body;
 
-  if (!exemplar_id || !nome_solicitante || !data_emprestimo || !data_prevista_devolucao) {
+  if (!exemplar_id || !usuario_id || !data_emprestimo || !data_prevista_devolucao) {
     return res.status(400).json({
-      erro: 'exemplar_id, nome_solicitante, data_emprestimo e data_prevista_devolucao são obrigatórios'
+      erro: 'exemplar_id, usuario_id, data_emprestimo e data_prevista_devolucao são obrigatórios'
     });
   }
 
@@ -41,7 +40,6 @@ router.post('/', async (req, res) => {
       'SELECT status FROM exemplares WHERE id = ?',
       [exemplar_id]
     );
-
     if (exemplares.length === 0) {
       return res.status(404).json({ erro: 'Exemplar não encontrado' });
     }
@@ -49,11 +47,16 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ erro: 'Exemplar não está disponível para empréstimo' });
     }
 
+    const [usuarios] = await pool.query('SELECT nome FROM usuarios WHERE id = ?', [usuario_id]);
+    if (usuarios.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado' });
+    }
+
     const [result] = await pool.query(
       `INSERT INTO emprestimos
-        (exemplar_id, nome_solicitante, contato_solicitante, data_emprestimo, data_prevista_devolucao, administrador_id)
+        (exemplar_id, usuario_id, nome_solicitante, data_emprestimo, data_prevista_devolucao, administrador_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [exemplar_id, nome_solicitante, contato_solicitante || null, data_emprestimo, data_prevista_devolucao, administrador_id || null]
+      [exemplar_id, usuario_id, usuarios[0].nome, data_emprestimo, data_prevista_devolucao, administrador_id || null]
     );
 
     res.status(201).json({ id: result.insertId, mensagem: 'Empréstimo registrado com sucesso' });
