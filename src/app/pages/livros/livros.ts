@@ -73,4 +73,9 @@ export class LivrosComponent {
   fecharDetalhe(): void {
     this.livroSelecionado.set(null);
   }
+
+  aoEmprestar(): void {
+    this.livroSelecionado.set(null);
+    this.filtro.set('emprestados');
+  }
 }

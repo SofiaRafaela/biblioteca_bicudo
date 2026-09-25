@@ -3,6 +3,7 @@
     <h2>Livros</h2>
     <div class="sub">Consulta e controle dos títulos do acervo</div>
   </div>
+  <button class="btn-primario" (click)="abrirCadastro()">Cadastrar Livro</button>
 </header>
 
 <div class="tabs">
@@ -20,11 +21,10 @@
   >
     Livros Emprestados
   </button>
-
-  <button class="btn-primario" (click)="abrirCadastro()">Cadastrar Livro</button>
 </div>
 
 <input class="field search" placeholder="Buscar por título, autor ou ISBN" [(ngModel)]="busca" name="busca" />
+
 <div class="table-wrap">
   <table>
     <thead>
@@ -65,5 +65,5 @@
 }
 
 @if (livroSelecionado()) {
-  <app-detalhe-livro [livro]="livroSelecionado()!" (fechar)="fecharDetalhe()" />
+  <app-detalhe-livro [livro]="livroSelecionado()!" (fechar)="fecharDetalhe()" (emprestado)="aoEmprestar()" />
 }

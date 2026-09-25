@@ -1,64 +1,45 @@
 <h2>Empréstimos</h2>
 
-<section class="ra-box">
-  <input [(ngModel)]="raDigitado" placeholder="Digite o RA do usuário" />
-  <button (click)="consultarRa()">Consultar RA</button>
-</section>
-
-@if (usuarioEncontrado()) {
-  <div class="ra-result ok">
-    <strong>{{ usuarioEncontrado()!.name }}</strong> — RA {{ usuarioEncontrado()!.ra }}
-  </div>
-}
-@if (raNaoEncontrado()) {
-  <div class="ra-result error">RA não cadastrado.</div>
-}
-
-@if (usuarioEncontrado()) {
-  <section class="form-loan">
-    <label>Exemplar disponível</label>
-    <select [(ngModel)]="copyIdSelecionado">
-      <option value="">Selecione...</option>
-      @for (ex of biblioteca.exemplaresDisponiveis(); track ex.id) {
-        <option [value]="ex.id">
-          {{ biblioteca.livro(ex.bookId)?.title }} — {{ ex.code }}
-        </option>
-      }
-    </select>
-
-    <label>Devolução prevista</label>
-    <input type="date" [(ngModel)]="dataDevolucao" />
-
-    <button [disabled]="!copyIdSelecionado()" (click)="confirmarRetirada()">
-      Confirmar retirada
-    </button>
-  </section>
-}
-
 @if (mensagem()) {
   <div class="toast" [class.error]="!mensagem()!.ok">{{ mensagem()!.msg }}</div>
 }
 
-<table>
-  <thead>
-    <tr>
-      <th>RA</th><th>Livro</th><th>Retirada</th><th>Devolução prevista</th><th>Status</th><th></th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (emp of biblioteca.emprestimos(); track emp.id) {
+@if (carregando()) {
+  <p class="carregando">Carregando empréstimos...</p>
+} @else {
+  <table>
+    <thead>
       <tr>
-        <td>{{ biblioteca.usuario(emp.userId)?.ra }}</td>
-        <td>{{ biblioteca.livro(biblioteca.exemplar(emp.copyId)?.bookId ?? '')?.title }}</td>
-        <td>{{ emp.loanDate }}</td>
-        <td>{{ emp.dueDate }}</td>
-        <td>{{ emp.status }}</td>
-        <td>
-          @if (emp.status !== 'devolvido') {
-            <button (click)="devolver(emp.id)">Registrar devolução</button>
-          }
-        </td>
+        <th>RA</th>
+        <th>Livro</th>
+        <th>Retirada</th>
+        <th>Devolução prevista</th>
+        <th>Status</th>
+        <th></th>
       </tr>
-    }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      @for (emp of emprestimos(); track emp.id) {
+        <tr>
+          <td>{{ emp.ra || '—' }}</td>
+          <td>{{ emp.titulo }}</td>
+          <td>{{ emp.data_emprestimo }}</td>
+          <td>{{ emp.data_prevista_devolucao }}</td>
+          <td>{{ emp.status }}</td>
+          <td>
+            @if (emp.status !== 'devolvido') {
+              <button
+                (click)="devolver(emp)"
+                [disabled]="devolvendoId() === emp.id"
+              >
+                {{ devolvendoId() === emp.id ? 'Registrando...' : 'Registrar devolução' }}
+              </button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6">Nenhum empréstimo registrado.</td></tr>
+      }
+    </tbody>
+  </table>
+}

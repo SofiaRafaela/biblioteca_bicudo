@@ -1,50 +1,53 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { BibliotecaService } from '../../services/biblioteca';
-import { Usuario } from '../../models/biblioteca.models';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { BibliotecaService, EmprestimoListaApi } from '../../services/biblioteca';
 
 @Component({
   selector: 'app-emprestimos',
   standalone: true,
-  imports: [FormsModule],
+  imports: [],
   templateUrl: './emprestimos.html',
   styleUrl: './emprestimos.scss',
 })
-export class EmprestimosComponent {
+export class EmprestimosComponent implements OnInit {
   biblioteca = inject(BibliotecaService);
 
-  raDigitado = signal('');
-  usuarioEncontrado = signal<Usuario | null>(null);
-  raNaoEncontrado = signal(false);
-  copyIdSelecionado = signal('');
-  dataDevolucao = signal(this.padDate(7));
+  emprestimos = signal<EmprestimoListaApi[]>([]);
+  carregando = signal(true);
+  devolvendoId = signal<number | null>(null);
   mensagem = signal<{ ok: boolean; msg: string } | null>(null);
 
-  private padDate(dias: number): string {
-    return new Date(Date.now() + dias * 86400000).toISOString().slice(0, 10);
+  ngOnInit(): void {
+    this.carregarEmprestimos();
   }
 
-  consultarRa() {
-    const usuario = this.biblioteca.buscarUsuarioPorRa(this.raDigitado());
-    this.usuarioEncontrado.set(usuario ?? null);
-    this.raNaoEncontrado.set(!usuario);
+  carregarEmprestimos(): void {
+    this.carregando.set(true);
+    this.biblioteca.listarEmprestimosApi().subscribe({
+      next: (lista) => {
+        this.emprestimos.set(lista);
+        this.carregando.set(false);
+      },
+      error: () => {
+        this.mensagem.set({ ok: false, msg: 'Erro ao carregar empréstimos.' });
+        this.carregando.set(false);
+      },
+    });
   }
 
-  confirmarRetirada() {
-    const resultado = this.biblioteca.registrarEmprestimo(
-      this.raDigitado(),
-      this.copyIdSelecionado(),
-      this.dataDevolucao()
-    );
-    this.mensagem.set(resultado);
-    if (resultado.ok) {
-      this.raDigitado.set('');
-      this.usuarioEncontrado.set(null);
-      this.copyIdSelecionado.set('');
-    }
-  }
+  devolver(emprestimo: EmprestimoListaApi): void {
+    this.devolvendoId.set(emprestimo.id);
+    this.mensagem.set(null);
 
-  devolver(emprestimoId: string) {
-    this.biblioteca.devolverExemplar(emprestimoId);
+    this.biblioteca.devolverEmprestimoApi(emprestimo.id, String(emprestimo.exemplar_id)).subscribe({
+      next: () => {
+        this.devolvendoId.set(null);
+        this.mensagem.set({ ok: true, msg: `Devolução de "${emprestimo.titulo}" registrada com sucesso.` });
+        this.carregarEmprestimos();
+      },
+      error: (err) => {
+        this.devolvendoId.set(null);
+        this.mensagem.set({ ok: false, msg: err.error?.erro || 'Erro ao registrar devolução.' });
+      },
+    });
   }
 }

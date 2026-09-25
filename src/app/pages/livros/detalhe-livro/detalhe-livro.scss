@@ -83,6 +83,8 @@
 }
 
 .descricao {
+    margin-bottom: 16px;
+
     .rotulo {
         display: block;
         font: 10px var(--mono);
@@ -98,4 +100,70 @@
         max-height: 180px;
         overflow-y: auto;
     }
+}
+
+.btn-primario, .btn-secundario {
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  border: 1px solid var(--line);
+}
+
+.btn-primario {
+  background: var(--green);
+  color: #06110c;
+  border: none;
+}
+
+.btn-secundario {
+  background: transparent;
+  color: var(--soft);
+}
+
+.sem-exemplar {
+  font-size: 12px;
+  color: var(--soft);
+  font-style: italic;
+}
+
+.form-emprestimo {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--soft);
+  }
+
+  .field {
+    width: 100%;
+  }
+}
+
+.usuario-encontrado, .usuario-nao-encontrado {
+  font-size: 13px;
+}
+
+.erro-emprestimo {
+  color: #e07a5f;
+  font-size: 12px;
+}
+
+.acoes-emprestimo {
+  display: flex;
+  gap: 10px;
+
+  button { flex: 1; }
+}
+
+.salvando {
+  font-size: 13px;
+  color: var(--soft);
+  margin-top: 8px;
 }

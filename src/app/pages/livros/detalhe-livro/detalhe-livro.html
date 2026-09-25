@@ -30,6 +30,68 @@
                     <p>{{ livro.description }}</p>
                 </div>
                 }
+
+                @if (estadoEmprestimo() === 'fechado') {
+                  @if (temExemplarDisponivel()) {
+                    <button class="btn-primario" (click)="abrirFormEmprestimo()">Emprestar</button>
+                  } @else {
+                    <p class="sem-exemplar">Nenhum exemplar disponível para empréstimo.</p>
+                  }
+                }
+
+                @if (estadoEmprestimo() === 'buscandoRa') {
+                  <div class="form-emprestimo">
+                    <label>
+                      RA do usuário
+                      <input class="field" [(ngModel)]="ra" name="ra" placeholder="Ex: 2026001" (keyup.enter)="buscarPorRa()" />
+                    </label>
+                    @if (erroEmprestimo()) {
+                      <p class="erro-emprestimo">{{ erroEmprestimo() }}</p>
+                    }
+                    <div class="acoes-emprestimo">
+                      <button class="btn-secundario" (click)="cancelarEmprestimo()">Cancelar</button>
+                      <button class="btn-primario" (click)="buscarPorRa()">Buscar</button>
+                    </div>
+                  </div>
+                }
+
+                @if (estadoEmprestimo() === 'usuarioEncontrado' && usuarioEncontrado()) {
+                  <div class="form-emprestimo">
+                    <p class="usuario-encontrado">Usuário: <strong>{{ usuarioEncontrado()!.nome }}</strong> (RA {{ usuarioEncontrado()!.ra }})</p>
+                    @if (erroEmprestimo()) {
+                      <p class="erro-emprestimo">{{ erroEmprestimo() }}</p>
+                    }
+                    <div class="acoes-emprestimo">
+                      <button class="btn-secundario" (click)="cancelarEmprestimo()">Cancelar</button>
+                      <button class="btn-primario" (click)="confirmarEmprestimoComUsuarioExistente()">Confirmar Empréstimo</button>
+                    </div>
+                  </div>
+                }
+
+                @if (estadoEmprestimo() === 'cadastrarUsuario') {
+                  <div class="form-emprestimo">
+                    <p class="usuario-nao-encontrado">RA {{ ra() }} não encontrado — cadastre o usuário:</p>
+                    <label>
+                      Nome
+                      <input class="field" [(ngModel)]="nomeNovoUsuario" name="nomeNovoUsuario" placeholder="Nome completo" />
+                    </label>
+                    <label>
+                      Contato (opcional)
+                      <input class="field" [(ngModel)]="contatoNovoUsuario" name="contatoNovoUsuario" placeholder="Telefone ou e-mail" />
+                    </label>
+                    @if (erroEmprestimo()) {
+                      <p class="erro-emprestimo">{{ erroEmprestimo() }}</p>
+                    }
+                    <div class="acoes-emprestimo">
+                      <button class="btn-secundario" (click)="cancelarEmprestimo()">Cancelar</button>
+                      <button class="btn-primario" (click)="cadastrarUsuarioEEmprestar()">Cadastrar e Emprestar</button>
+                    </div>
+                  </div>
+                }
+
+                @if (estadoEmprestimo() === 'salvando') {
+                  <p class="salvando">Salvando...</p>
+                }
             </div>
         </div>
     </div>

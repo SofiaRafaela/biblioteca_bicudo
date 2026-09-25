@@ -17,6 +17,20 @@ function plusDays(n: number): string {
   return new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
 }
 
+export interface EmprestimoListaApi {
+  id: number;
+  exemplar_id: number;
+  usuario_id: number | null;
+  ra: string | null;
+  titulo: string;
+  autor: string;
+  codigo_patrimonio: string | null;
+  data_emprestimo: string;
+  data_prevista_devolucao: string;
+  data_devolucao_real: string | null;
+  status: 'ativo' | 'devolvido' | 'atrasado';
+}
+
 export interface DadosLivroIsbn {
   title: string;
   authors: string;
@@ -37,6 +51,9 @@ interface LivroApi {
   categoria: string | null;
   editora: string | null;
   ano_publicacao: number | null;
+  descricao: string | null;
+  paginas: string | null;
+  capa_url: string | null;
 }
 
 interface ExemplarApi {
@@ -44,6 +61,18 @@ interface ExemplarApi {
   livro_id: number;
   codigo_patrimonio: string | null;
   status: string;
+}
+
+export interface UsuarioApi {
+  id: number;
+  ra: string;
+  nome: string;
+  contato: string | null;
+}
+
+interface EmprestimoApi {
+  id: number;
+  mensagem: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -108,6 +137,9 @@ export class BibliotecaService {
       year: row.ano_publicacao ?? undefined,
       isbn: row.isbn ?? undefined,
       publisher: row.editora ?? undefined,
+      description: row.descricao ?? undefined,
+      pages: row.paginas ?? undefined,
+      image: row.capa_url ?? undefined,
     };
   }
 
@@ -250,6 +282,9 @@ export class BibliotecaService {
       categoria: categoria?.name || null,
       editora: dados.publisher || null,
       ano_publicacao,
+      descricao: dados.description || null,
+      paginas: dados.pages || null,
+      capa_url: dados.image || null,
     };
 
     return this.http.post<LivroApi>(`${this.apiUrl}/livros`, corpoLivro).pipe(
@@ -271,9 +306,9 @@ export class BibliotecaService {
               year: livroSalvo.ano_publicacao ?? undefined,
               isbn: livroSalvo.isbn ?? undefined,
               publisher: livroSalvo.editora ?? undefined,
-              description: dados.description,
-              pages: dados.pages,
-              image: dados.image,
+              description: livroSalvo.descricao ?? dados.description,
+              pages: livroSalvo.paginas ?? dados.pages,
+              image: livroSalvo.capa_url ?? dados.image,
             };
 
             const novoExemplar: Exemplar = {
@@ -290,6 +325,51 @@ export class BibliotecaService {
             return { livro: novoLivro, exemplar: novoExemplar };
           })
         );
+      })
+    );
+  }
+
+  // --- Empréstimo via backend (usuário cadastrado por RA) ---
+
+  buscarUsuarioPorRaApi(ra: string): Observable<UsuarioApi> {
+    return this.http.get<UsuarioApi>(`${this.apiUrl}/usuarios/ra/${ra.trim()}`);
+  }
+
+  cadastrarUsuarioApi(ra: string, nome: string, contato?: string): Observable<UsuarioApi> {
+    return this.http.post<UsuarioApi>(`${this.apiUrl}/usuarios`, { ra: ra.trim(), nome: nome.trim(), contato: contato || null });
+  }
+
+  registrarEmprestimoApi(exemplarId: string, usuarioId: number, dias: number = 7): Observable<EmprestimoApi> {
+    const corpo = {
+      exemplar_id: Number(exemplarId),
+      usuario_id: usuarioId,
+      data_emprestimo: today(),
+      data_prevista_devolucao: this.dataDevolucaoPadrao(dias),
+    };
+
+    return this.http.post<EmprestimoApi>(`${this.apiUrl}/emprestimos`, corpo).pipe(
+      map((resp) => {
+        this.exemplares.update(list =>
+          list.map(x => (x.id === exemplarId ? { ...x, status: 'emprestado' } : x))
+        );
+        return resp;
+      })
+    );
+  }
+
+  // --- Listagem e devolução de empréstimos (via backend) ---
+
+  listarEmprestimosApi(): Observable<EmprestimoListaApi[]> {
+    return this.http.get<EmprestimoListaApi[]>(`${this.apiUrl}/emprestimos`);
+  }
+
+  devolverEmprestimoApi(emprestimoId: number, exemplarId: string): Observable<{ mensagem: string }> {
+    return this.http.put<{ mensagem: string }>(`${this.apiUrl}/emprestimos/${emprestimoId}/devolver`, {}).pipe(
+      map((resp) => {
+        this.exemplares.update(list =>
+          list.map(x => (x.id === exemplarId ? { ...x, status: 'disponivel' } : x))
+        );
+        return resp;
       })
     );
   }
