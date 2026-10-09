@@ -5,6 +5,18 @@ import {
   Autor, Categoria, Livro, Exemplar, Usuario, Emprestimo
 } from '../models/biblioteca.models';
 
+export const SERIES = [
+  '6º ano',
+  '7º ano',
+  '8º ano',
+  '9º ano',
+  '1ª série do Ensino Médio',
+  '2ª série do Ensino Médio',
+  '3ª série do Ensino Médio',
+];
+
+
+
 function uid(prefix: string): string {
   return prefix + '_' + Math.random().toString(36).slice(2, 9);
 }
@@ -22,6 +34,9 @@ export interface EmprestimoListaApi {
   exemplar_id: number;
   usuario_id: number | null;
   ra: string | null;
+  nome_aluno: string | null;
+  nome_solicitante: string | null;
+  serie: string | null;
   titulo: string;
   autor: string;
   codigo_patrimonio: string | null;
@@ -29,9 +44,7 @@ export interface EmprestimoListaApi {
   data_prevista_devolucao: string;
   data_devolucao_real: string | null;
   status: 'ativo' | 'devolvido' | 'atrasado';
-}
-
-export interface DadosLivroIsbn {
+}export interface DadosLivroIsbn {
   title: string;
   authors: string;
   publisher: string;
@@ -67,6 +80,7 @@ export interface UsuarioApi {
   id: number;
   ra: string;
   nome: string;
+  serie: string | null;
   contato: string | null;
 }
 
@@ -335,8 +349,13 @@ export class BibliotecaService {
     return this.http.get<UsuarioApi>(`${this.apiUrl}/usuarios/ra/${ra.trim()}`);
   }
 
-  cadastrarUsuarioApi(ra: string, nome: string, contato?: string): Observable<UsuarioApi> {
-    return this.http.post<UsuarioApi>(`${this.apiUrl}/usuarios`, { ra: ra.trim(), nome: nome.trim(), contato: contato || null });
+  cadastrarUsuarioApi(ra: string, nome: string, serie: string, contato?: string): Observable<UsuarioApi> {
+    return this.http.post<UsuarioApi>(`${this.apiUrl}/usuarios`, {
+      ra: ra.trim(),
+      nome: nome.trim(),
+      serie,
+      contato: contato || null,
+    });
   }
 
   registrarEmprestimoApi(exemplarId: string, usuarioId: number, dias: number = 7): Observable<EmprestimoApi> {

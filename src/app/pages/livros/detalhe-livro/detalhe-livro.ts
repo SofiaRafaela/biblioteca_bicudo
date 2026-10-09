@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BibliotecaService, UsuarioApi } from '../../../services/biblioteca';
+import { BibliotecaService, UsuarioApi, SERIES } from '../../../services/biblioteca';
 import { Livro } from '../../../models/biblioteca.models';
 
 type EstadoEmprestimo = 'fechado' | 'buscandoRa' | 'usuarioEncontrado' | 'cadastrarUsuario' | 'salvando';
@@ -19,10 +19,13 @@ export class DetalheLivroComponent {
   @Output() fechar = new EventEmitter<void>();
   @Output() emprestado = new EventEmitter<void>();
 
+  series = SERIES;
+
   estadoEmprestimo = signal<EstadoEmprestimo>('fechado');
   ra = signal('');
   usuarioEncontrado = signal<UsuarioApi | null>(null);
   nomeNovoUsuario = signal('');
+  serieNovoUsuario = signal('');
   contatoNovoUsuario = signal('');
   erroEmprestimo = signal('');
 
@@ -46,6 +49,7 @@ export class DetalheLivroComponent {
     this.ra.set('');
     this.usuarioEncontrado.set(null);
     this.nomeNovoUsuario.set('');
+    this.serieNovoUsuario.set('');
     this.contatoNovoUsuario.set('');
     this.erroEmprestimo.set('');
   }
@@ -97,10 +101,15 @@ export class DetalheLivroComponent {
   cadastrarUsuarioEEmprestar(): void {
     const raDigitado = this.ra().trim();
     const nome = this.nomeNovoUsuario().trim();
+    const serie = this.serieNovoUsuario();
     const exemplar = this.biblioteca.exemplaresDisponiveisDoLivro(this.livro.id)[0];
 
     if (!nome) {
       this.erroEmprestimo.set('Informe o nome do usuário.');
+      return;
+    }
+    if (!serie) {
+      this.erroEmprestimo.set('Selecione a série do aluno.');
       return;
     }
     if (!exemplar) {
@@ -110,7 +119,7 @@ export class DetalheLivroComponent {
 
     this.estadoEmprestimo.set('salvando');
 
-    this.biblioteca.cadastrarUsuarioApi(raDigitado, nome, this.contatoNovoUsuario().trim()).subscribe({
+    this.biblioteca.cadastrarUsuarioApi(raDigitado, nome, serie, this.contatoNovoUsuario().trim()).subscribe({
       next: (usuarioSalvo) => {
         this.biblioteca.registrarEmprestimoApi(exemplar.id, usuarioSalvo.id).subscribe({
           next: () => {

@@ -22,7 +22,7 @@
 
     @if (estado() === 'erro') {
       <div class="erro">
-        <p>Código inválido — {{ erroMsg() }}</p>
+        <p>{{ erroMsg() }}</p>
         <button class="btn-secundario" (click)="tentarNovamente()">Tentar outro código</button>
       </div>
     }

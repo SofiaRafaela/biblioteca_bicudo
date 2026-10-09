@@ -1,0 +1,114 @@
+.topbar {
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  .topbar h2 { color: var(--green); font-size: 24px; margin: 0; }
+  .sub { font: 11px var(--mono); color: var(--soft); margin-top: 5px; }
+  
+  .toast {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    background: rgba(47, 122, 77, 0.12);
+    border: 1px solid #2f7a4d;
+    color: #1f5a37;
+  }
+  .toast.error {
+    background: rgba(179, 65, 47, 0.1);
+    border-color: #b3412f;
+    color: #8c2f1f;
+  }
+  
+  // --- Busca + filtros ---
+  .barra-filtros {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  
+  .search {
+    flex: 1;
+    min-width: 240px;
+    margin-bottom: 0;
+  }
+  
+  .pills {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .pill {
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fbf5e6;
+    color: var(--green);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .pill:hover:not(.ativo) { border-color: var(--green); }
+  .pill.ativo {
+    background: var(--green);
+    border-color: var(--green);
+    color: #f0e6c8;
+  }
+  
+  // --- Tabela ---
+  .table-wrap { overflow-x: auto; }
+  
+  tbody tr:nth-child(even) {
+    background: rgba(120, 90, 40, 0.06);
+  }
+  
+  td { vertical-align: middle; }
+  
+  .aluno .ra,
+  .nota-data {
+    display: block;
+    font: 10px var(--mono);
+    color: var(--soft);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  .nota-data { text-transform: uppercase; }
+  
+  .carregando { color: var(--soft); font-size: 13px; }
+  
+  // --- Carimbo de status ---
+  .stamp {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    font: 600 11px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.35);
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+  .stamp-ativo { color: #a8741f; }
+  .stamp-atrasado { color: #b3412f; background: rgba(179, 65, 47, 0.08); }
+  .stamp-devolvido { color: #2f7a4d; background: rgba(47, 122, 77, 0.1); }
+  
+  // --- Botão de devolução ---
+  .btn-devolver {
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-devolver:hover:not(:disabled) {
+    background: var(--green);
+    color: #f0e6c8;
+  }
+  .btn-devolver:disabled { opacity: 0.6; cursor: not-allowed; }

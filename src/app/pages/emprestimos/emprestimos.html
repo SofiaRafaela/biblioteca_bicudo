@@ -1,45 +1,84 @@
-<h2>Empréstimos</h2>
+<header class="topbar">
+  <div>
+    <h2>Empréstimos</h2>
+    <div class="sub">Controle de retiradas e devoluções do acervo</div>
+  </div>
+</header>
 
 @if (mensagem()) {
   <div class="toast" [class.error]="!mensagem()!.ok">{{ mensagem()!.msg }}</div>
 }
 
+<div class="barra-filtros">
+  <input
+    class="field search"
+    placeholder="Buscar por livro, autor, aluno ou série..."
+    [(ngModel)]="busca"
+    name="busca"
+  />
+
+  <div class="pills">
+    <button class="pill" [class.ativo]="filtro() === 'todos'" (click)="selecionarFiltro('todos')">Todos</button>
+    <button class="pill" [class.ativo]="filtro() === 'ativos'" (click)="selecionarFiltro('ativos')">Ativos</button>
+    <button class="pill" [class.ativo]="filtro() === 'devolvidos'" (click)="selecionarFiltro('devolvidos')">Devolvidos</button>
+  </div>
+</div>
+
 @if (carregando()) {
   <p class="carregando">Carregando empréstimos...</p>
 } @else {
-  <table>
-    <thead>
-      <tr>
-        <th>RA</th>
-        <th>Livro</th>
-        <th>Retirada</th>
-        <th>Devolução prevista</th>
-        <th>Status</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (emp of emprestimos(); track emp.id) {
+  <div class="table-wrap">
+    <table>
+      <thead>
         <tr>
-          <td>{{ emp.ra || '—' }}</td>
-          <td>{{ emp.titulo }}</td>
-          <td>{{ emp.data_emprestimo }}</td>
-          <td>{{ emp.data_prevista_devolucao }}</td>
-          <td>{{ emp.status }}</td>
-          <td>
-            @if (emp.status !== 'devolvido') {
-              <button
-                (click)="devolver(emp)"
-                [disabled]="devolvendoId() === emp.id"
-              >
-                {{ devolvendoId() === emp.id ? 'Registrando...' : 'Registrar devolução' }}
-              </button>
-            }
-          </td>
+          <th>Livro</th>
+          <th>Autor</th>
+          <th>Aluno</th>
+          <th>Série</th>
+          <th>Retirada</th>
+          <th>Devolução</th>
+          <th>Status</th>
+          <th></th>
         </tr>
-      } @empty {
-        <tr><td colspan="6">Nenhum empréstimo registrado.</td></tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (emp of listaFiltrada(); track emp.id) {
+          <tr>
+            <td><strong>{{ emp.titulo }}</strong></td>
+            <td>{{ emp.autor || '—' }}</td>
+            <td class="aluno">
+              {{ emp.nome_aluno || emp.nome_solicitante || '—' }}
+              @if (emp.ra) {
+                <span class="ra">RA {{ emp.ra }}</span>
+              }
+            </td>
+            <td>{{ emp.serie || '—' }}</td>
+            <td>{{ formatarData(emp.data_emprestimo) }}</td>
+            <td>
+              {{ dataDevolucao(emp) }}
+              @if (emp.status !== 'devolvido') {
+                <span class="nota-data">prevista</span>
+              }
+            </td>
+            <td>
+              <span class="stamp" [class]="'stamp stamp-' + statusExibicao(emp)">{{ rotuloStatus(emp) }}</span>
+            </td>
+            <td>
+              @if (emp.status !== 'devolvido') {
+                <button
+                  class="btn-devolver"
+                  (click)="devolver(emp)"
+                  [disabled]="devolvendoId() === emp.id"
+                >
+                  {{ devolvendoId() === emp.id ? 'Registrando...' : 'Registrar devolução' }}
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="8"><div class="empty">Nenhum empréstimo encontrado.</div></td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
 }

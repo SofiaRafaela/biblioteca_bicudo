@@ -37,17 +37,30 @@ router.post('/', async (req, res) => {
     const [result] = await pool.query(
       `INSERT INTO livros (titulo, autor, isbn, categoria, editora, ano_publicacao, descricao, paginas, capa_url)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [titulo, autor, isbn || null, categoria || null, editora || null, ano_publicacao || null, descricao || null, paginas || null, capa_url || null]
+      [
+        titulo,
+        autor,
+        isbn || null,
+        categoria || null,
+        editora || null,
+        ano_publicacao || null,
+        descricao || null,
+        paginas || null,
+        capa_url || null,
+      ]
     );
     res.status(201).json({
       id: result.insertId, titulo, autor, isbn, categoria, editora, ano_publicacao, descricao, paginas, capa_url
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ erro: 'Erro ao cadastrar livro' });
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ erro: 'Este ISBN já está cadastrado.' });
+    }
+    // Mostra o motivo real enquanto estamos desenvolvendo (tira isso antes de publicar o sistema)
+    res.status(500).json({ erro: `Erro ao cadastrar livro: ${err.sqlMessage || err.message}` });
   }
 });
-
 // PUT /api/livros/:id — atualiza um livro
 router.put('/:id', async (req, res) => {
   const { titulo, autor, isbn, categoria, editora, ano_publicacao } = req.body;

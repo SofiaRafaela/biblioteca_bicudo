@@ -2,15 +2,17 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// GET /api/emprestimos — lista todos os empréstimos (com dados do exemplar/livro)
+// GET /api/emprestimos — lista todos os empréstimos (com dados do exemplar/livro/usuário)
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT emp.*, l.titulo, l.autor, ex.codigo_patrimonio
+      `SELECT emp.*, l.titulo, l.autor, ex.codigo_patrimonio,
+              u.ra, u.nome AS nome_aluno, u.serie
        FROM emprestimos emp
        JOIN exemplares ex ON ex.id = emp.exemplar_id
        JOIN livros l ON l.id = ex.livro_id
-       ORDER BY emp.data_emprestimo DESC`
+       LEFT JOIN usuarios u ON u.id = emp.usuario_id
+       ORDER BY emp.data_emprestimo DESC, emp.id DESC`
     );
     res.json(rows);
   } catch (err) {
@@ -101,25 +103,6 @@ router.get('/atrasados', async (req, res) => {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao buscar atrasados' });
   }
-  // GET /api/emprestimos — lista todos os empréstimos (com dados do exemplar/livro/usuário)
-  router.get('/', async (req, res) => {
-    try {
-      const [rows] = await pool.query(
-        `SELECT emp.*, l.titulo, l.autor, ex.codigo_patrimonio, u.ra
-       FROM emprestimos emp
-       JOIN exemplares ex ON ex.id = emp.exemplar_id
-       JOIN livros l ON l.id = ex.livro_id
-       LEFT JOIN usuarios u ON u.id = emp.usuario_id
-       ORDER BY emp.data_emprestimo DESC`
-      );
-      res.json(rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ erro: 'Erro ao buscar empréstimos' });
-    }
-  });
-
-
 });
 
 module.exports = router;

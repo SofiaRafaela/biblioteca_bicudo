@@ -10,48 +10,6 @@
 .topbar h2 { color: var(--green); font-size: 24px; margin: 0; }
 .sub { font: 11px var(--mono); color: var(--soft); margin-top: 5px; }
 
-.tabs {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
-
-.tab {
-  appearance: none;
-  background: transparent;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 10px 4px;
-  margin-right: 20px;
-  font: 12px var(--mono);
-  letter-spacing: 0.02em;
-  color: var(--soft);
-  position: relative;
-  transition: color 0.15s ease;
-}
-
-.tab:hover {
-  color: var(--green);
-}
-
-.tab.ativo {
-  color: var(--green);
-  font-weight: 600;
-}
-
-.tab.ativo::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--green);
-}
-
 .btn-primario {
   background: var(--green);
   color: #ffffff;
@@ -66,14 +24,100 @@
 }
 .btn-primario:hover { opacity: 0.9; }
 
-.search {
-  width: 100%;
-  margin-bottom: 15px;
+// --- Busca + filtros ---
+.barra-filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 
-.linha-livro {
+.search {
+  flex: 1;
+  min-width: 240px;
+  margin-bottom: 0;
+}
+
+.select {
+  width: auto;
+  min-width: 190px;
+  margin-bottom: 0;
   cursor: pointer;
 }
-.linha-livro:hover {
-  background: rgba(255, 255, 255, 0.04);
+
+// --- Tabela ---
+.table-wrap { overflow-x: auto; }
+
+tbody tr:nth-child(even) {
+  background: rgba(120, 90, 40, 0.06);
+}
+
+td { vertical-align: middle; }
+
+.linha-livro { cursor: pointer; }
+.linha-livro:hover { background: rgba(120, 90, 40, 0.12) !important; }
+
+.codigo {
+  font: 13px var(--mono);
+  color: var(--soft);
+  white-space: nowrap;
+}
+
+.livro-cel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mini-capa {
+  width: 44px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.mini-capa.vazia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--soft);
+  background: repeating-linear-gradient(
+    135deg,
+    #efe3c2,
+    #efe3c2 4px,
+    #f7efd9 4px,
+    #f7efd9 8px
+  );
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.titulo { font-weight: 500; }
+
+// --- Carimbo de status ---
+.stamp {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.35);
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+.stamp-disponivel { color: #2f7a4d; background: rgba(47, 122, 77, 0.1); }
+.stamp-emprestado { color: #a8741f; }
+.stamp-indisponivel { color: #8a8a80; }
+
+.nota-disp {
+  display: block;
+  margin-top: 4px;
+  font: 10px var(--mono);
+  color: var(--soft);
+  letter-spacing: 0.04em;
 }
