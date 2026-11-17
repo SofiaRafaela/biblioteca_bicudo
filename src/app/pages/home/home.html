@@ -1,86 +1,98 @@
 <header class="topbar">
   <div>
-    <h2>Dashboard</h2>
-    <div class="sub">Controle geral do acervo e da circulação</div>
-  </div>
-  <div class="user">
-    <div class="avatar">AD</div>
-    <div><strong>Administrador</strong><span>Acesso ao sistema</span></div>
+    <h2>Home</h2>
+    <div class="sub">Painel geral do acervo — atualizado em tempo real</div>
   </div>
 </header>
 
+<section class="hero">
+  <div class="hero-eyebrow">Consulta aberta ao acervo</div>
+  <h3>Encontre sua próxima leitura</h3>
+  <p>Pesquise por título, autor ou categoria e veja rapidamente o que está disponível.</p>
+
+  <div class="hero-busca">
+    <input
+      class="hero-input"
+      placeholder="Ex.: Machado de Assis, literatura…"
+      [(ngModel)]="busca"
+      name="busca"
+      (keyup.enter)="pesquisar()"
+    />
+    <button class="hero-btn" (click)="pesquisar()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="M16 16l4.5 4.5" />
+      </svg>
+      Pesquisar
+    </button>
+  </div>
+
+  <div class="hero-rodape">Acervo · consulta rápida</div>
+</section>
+
 <div class="stats">
-  <div class="stat">
-    <div class="label">Livros cadastrados</div>
+  <div class="stat dot-dark">
+    <span class="ponto"></span>
+    <div class="label">Títulos cadastrados</div>
     <div class="value">{{ dashboard()?.livros_cadastrados ?? '—' }}</div>
-    <div class="detail">Títulos disponíveis no catálogo</div>
+    <div class="detail">Livros distintos no acervo</div>
   </div>
-  <div class="stat">
-    <div class="label">Exemplares disponíveis</div>
+
+  <div class="stat dot-brass">
+    <span class="ponto"></span>
+    <div class="label">Disponíveis agora</div>
     <div class="value">{{ dashboard()?.exemplares_disponiveis ?? '—' }}</div>
-    <div class="detail">Cópias prontas para empréstimo</div>
+    <div class="detail">Prontos para empréstimo</div>
   </div>
-  <div class="stat">
+
+  <div class="stat dot-green">
+    <span class="ponto"></span>
     <div class="label">Empréstimos ativos</div>
-    <div class="value">{{ dashboard()?.emprestimos_ativos ?? '—' }}</div>
-    <div class="detail">Livros atualmente em circulação</div>
-  </div>
-  <div class="stat warn">
-    <div class="label">Atrasados</div>
-    <div class="value">{{ dashboard()?.atrasados ?? '—' }}</div>
-    <div class="detail">Precisam de acompanhamento</div>
+    <div class="value">{{ emCirculacao() ?? '—' }}</div>
+    <div class="detail">Em circulação neste momento</div>
   </div>
 </div>
 
 <div class="grid2">
   <div class="panel">
     <div class="panel-head">
-      <h3>Fluxo do projeto</h3>
+      <h3>Últimas movimentações</h3>
+      <span class="badge gray">{{ emprestimos().length }} registros</span>
     </div>
     <div class="panel-body">
-      <div class="flow">
-        <div class="flow-step">
-          <b>1</b>
-          <strong>Cadastrar RA</strong>
-          <span>O administrador encontra ou cadastra o aluno pelo RA.</span>
+      @for (emp of ultimasMovimentacoes(); track emp.id) {
+        <div class="mini">
+          <span class="mini-info">
+            <strong>{{ emp.titulo }}</strong>
+            <small>{{ resumoMovimentacao(emp) }}</small>
+          </span>
+          <span [class]="'stamp stamp-' + statusExibicao(emp)">{{ rotuloStatus(emp) }}</span>
         </div>
-        <div class="flow-step">
-          <b>2</b>
-          <strong>Consultar livro</strong>
-          <span>Busca por título, autor ou ISBN.</span>
-        </div>
-        <div class="flow-step">
-          <b>3</b>
-          <strong>Registrar retirada</strong>
-          <span>O empréstimo fica vinculado ao RA e ao exemplar.</span>
-        </div>
-        <div class="flow-step">
-          <b>4</b>
-          <strong>Devolver e controlar</strong>
-          <span>A devolução libera o exemplar e atualiza o histórico.</span>
-        </div>
-      </div>
+      } @empty {
+        <div class="empty">Nenhuma movimentação ainda.</div>
+      }
     </div>
   </div>
 
   <div class="panel">
     <div class="panel-head">
-      <h3>Últimas movimentações</h3>
-      <span class="badge gray">{{ biblioteca.emprestimos().length }}</span>
+      <h3>Livros emprestados no momento</h3>
+      <span class="badge gray">{{ emprestadosAgora().length }}</span>
     </div>
-    <div class="panel-body">
-      @for (emp of ultimasMovimentacoes(); track emp.id) {
+    <div class="panel-body rolavel">
+      @for (emp of emprestadosAgora(); track emp.id) {
         <div class="mini">
-          <span>
-            <strong>{{ livroDoEmprestimo(emp)?.title }}</strong><br />
-            <small>RA {{ usuarioDoEmprestimo(emp)?.ra }} · {{ usuarioDoEmprestimo(emp)?.name }}</small>
+          <span class="mini-info">
+            <strong>{{ emp.titulo }}</strong>
+            <small>{{ resumoEmprestado(emp) }}</small>
           </span>
-          <span class="badge" [class.ok]="emp.status === 'ativo'" [class.red]="emp.status === 'atrasado'" [class.gray]="emp.status === 'devolvido'">
-            {{ emp.status }}
+          <span class="mini-dir">
+            <span [class]="'stamp stamp-' + statusExibicao(emp)">{{ rotuloStatus(emp) }}</span>
+            <small>até {{ formatarData(emp.data_prevista_devolucao) }}</small>
           </span>
         </div>
       } @empty {
-        <div class="empty">Nenhuma movimentação ainda.</div>
+        <div class="empty">Nenhum livro emprestado no momento.</div>
       }
     </div>
   </div>
