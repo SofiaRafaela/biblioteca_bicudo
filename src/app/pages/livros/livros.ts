@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BibliotecaService } from '../../services/biblioteca';
 import { CadastrarLivroComponent } from './cadastrar-livro/cadastrar-livro';
@@ -17,8 +18,10 @@ type FiltroStatus = 'todos' | 'disponivel' | 'emprestado';
 })
 export class LivrosComponent {
   biblioteca = inject(BibliotecaService);
+  private route = inject(ActivatedRoute);
 
-  busca = signal('');
+  // Se veio da busca da Home (?busca=...), já abre filtrado
+  busca = signal(this.route.snapshot.queryParamMap.get('busca') ?? '');
   categoriaFiltro = signal('');
   statusFiltro = signal<FiltroStatus>('todos');
   mostrarModalCadastro = signal(false);

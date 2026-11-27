@@ -1,7 +1,4 @@
 .topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   border-bottom: 1px dashed var(--line);
   padding-bottom: 18px;
   margin-bottom: 24px;
@@ -9,96 +6,218 @@
 .topbar h2 { color: var(--green); font-size: 24px; margin: 0; }
 .sub { font: 11px var(--mono); color: var(--soft); margin-top: 5px; }
 
-.user {
+// --- Card verde de busca ---
+.hero {
+  background: #1c3829;
+  color: #f4ecd6;
+  border-radius: var(--radius, 8px);
+  padding: 30px 46px 22px;
+  margin-bottom: 26px;
+  box-shadow: var(--shadow);
+}
+
+.hero-eyebrow {
+  font: 12px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #c08a3a;
+  margin-bottom: 6px;
+}
+
+.hero h3 {
+  font: 34px/1.15 var(--display);
+  color: #f6efdb;
+  margin: 0 0 14px;
+}
+
+.hero p {
+  font: 15px/1.7 var(--mono);
+  color: #d8d2b9;
+  max-width: 640px;
+  margin: 0 0 22px;
+}
+
+.hero-busca {
+  display: flex;
+  gap: 16px;
+}
+
+.hero-input {
+  flex: 1;
+  min-width: 0;
+  height: 62px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 4px;
+  background: #fdf9ee;
+  color: #2b2b22;
+  font-size: 18px;
+}
+.hero-input::placeholder { color: #8a8573; }
+.hero-input:focus { outline: 2px solid #c08a3a; }
+
+.hero-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
-  border-left: 1px dashed var(--line);
-  padding-left: 12px;
+  gap: 10px;
+  padding: 0 32px;
+  border: none;
+  border-radius: 4px;
+  background: #a8741f;
+  color: #ffffff;
+  font-size: 17px;
+  cursor: pointer;
+  white-space: nowrap;
 }
-.avatar {
-  width: 35px;
-  height: 35px;
-  background: var(--green);
-  color: var(--white);
-  border: 2px solid var(--brass-light);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font: 600 11px var(--mono);
-}
-.user strong { display: block; font-size: 12px; }
-.user span { font: 10px var(--mono); color: var(--soft); }
+.hero-btn:hover { filter: brightness(1.1); }
 
+.hero-rodape {
+  margin-top: 18px;
+  text-align: right;
+  font: 11px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6f8d78;
+}
+
+@media (max-width: 700px) {
+  .hero { padding: 24px 20px 18px; }
+  .hero-busca { flex-direction: column; }
+  .hero-btn { height: 52px; justify-content: center; }
+}
+
+// --- Cards de números ---
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 16px;
-  margin-bottom: 22px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 26px;
 }
+@media (max-width: 900px) { .stats { grid-template-columns: 1fr; } }
+
 .stat {
+  --dot: #1d3a2b;
+  position: relative;
   background: var(--card);
   border: 1px solid var(--line);
+  border-radius: var(--radius, 8px);
   box-shadow: var(--shadow);
-  padding: 18px 20px;
-  border-radius: var(--radius);
-  position: relative;
-  overflow: hidden;
+  padding: 22px 28px 24px 58px;
 
-  &:before {
-    content: "";
+  // linha pontilhada à esquerda
+  &::before {
+    content: '';
     position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
-    background: var(--green);
+    left: 18px;
+    top: 16px;
+    bottom: 16px;
+    border-left: 1px dashed #cdbd93;
   }
-  &.warn:before { background: var(--red); }
-}
-.stat .label { font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--soft); }
-.stat .value { font: 36px var(--display); color: var(--green); margin-top: 7px; line-height: 1; }
-.stat .detail { font-size: 12px; color: var(--soft); margin-top: 8px; }
 
+  // pontinho claro perto do topo da linha
+  &::after {
+    content: '';
+    position: absolute;
+    left: 26px;
+    top: 26px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #e4d9b8;
+  }
+}
+
+.dot-dark  { --dot: #1d3a2b; }
+.dot-brass { --dot: #b0802f; }
+.dot-green { --dot: #2f6b4a; }
+
+.ponto {
+  position: absolute;
+  top: 26px;
+  right: 28px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 0 4px rgba(120, 90, 40, 0.14);
+}
+
+.stat .label {
+  font: 12.5px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #5c5a4b;
+}
+.stat .value {
+  font: 58px/1 var(--display);
+  color: var(--green);
+  margin: 10px 0 18px;
+}
+.stat .detail {
+  font-style: italic;
+  font-size: 16px;
+  color: var(--soft);
+}
+
+// --- Painéis ---
 .grid2 {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 18px;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
 }
 @media (max-width: 1000px) { .grid2 { grid-template-columns: 1fr; } }
 
-.flow {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+.rolavel {
+  max-height: 360px;
+  overflow-y: auto;
 }
-@media (max-width: 700px) { .flow { grid-template-columns: 1fr 1fr; } }
-
-.flow-step {
-  background: #fffdf8;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 13px;
-}
-.flow-step b {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--green);
-  color: var(--white);
-  font: 11px var(--mono);
-  margin-bottom: 9px;
-}
-.flow-step strong { display: block; font-size: 13px; color: var(--green); margin-bottom: 5px; }
-.flow-step span { font-size: 11.5px; color: var(--soft); line-height: 1.45; }
 
 .mini {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(203, 185, 140, .45);
-  font-size: 13px;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(203, 185, 140, 0.45);
 
   &:last-child { border-bottom: 0; }
 }
+
+.mini-info {
+  min-width: 0;
+
+  strong { display: block; font-size: 15px; }
+  small {
+    display: block;
+    margin-top: 3px;
+    font: 11px var(--mono);
+    color: var(--soft);
+  }
+}
+
+.mini-dir {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+
+  small { font: 10px var(--mono); color: var(--soft); }
+}
+
+// --- Carimbo de status ---
+.stamp {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.35);
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+.stamp-ativo     { color: #a8741f; }
+.stamp-atrasado  { color: #b3412f; background: rgba(179, 65, 47, 0.08); }
+.stamp-devolvido { color: #2f7a4d; background: rgba(47, 122, 77, 0.1); }

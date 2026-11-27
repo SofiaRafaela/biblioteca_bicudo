@@ -4,7 +4,7 @@
         <div class="brand-content">
 
             <div class="logo">
-                <img src="assets/logo.png" alt="Logo Biblioteca Educacional Bicudo">
+                <img src="/bibi.jpg" alt="Logo Biblioteca Educacional Bicudo">
             </div>
 
             <p class="mini-title">BIBLIOTECA</p>
@@ -34,41 +34,18 @@
             <div class="cabecalho">
                 <span class="subtitulo">BIBLIOTECA EDUCACIONAL BICUDO</span>
 
-                <h2>{{ modo() === 'entrar' ? 'Bem-vindo(a)!' : 'Crie sua conta' }}</h2>
+                <h2>Bem-vindo(a)!</h2>
 
-                <p>
-                    {{ modo() === 'entrar'
-                    ? 'Acesse sua conta para continuar sua jornada de aprendizado.'
-                    : 'Cadastre-se para acessar a Biblioteca Educacional Bicudo.' }}
-                </p>
-            </div>
-
-            <div class="abas">
-                <button type="button" class="aba" [class.ativa]="modo() === 'entrar'" (click)="irParaEntrar()">
-                    Entrar
-                </button>
-                <button type="button" class="aba" [class.ativa]="modo() === 'cadastrar'" (click)="irParaCadastrar()">
-                    Cadastrar
-                </button>
+                <p>Acesse sua conta para continuar sua jornada de aprendizado.</p>
             </div>
 
             <form (ngSubmit)="onSubmit()">
 
-                @if (modo() === 'cadastrar') {
-                <div class="campo">
-                    <label for="nome">Nome</label>
-                    <div class="input-container">
-                        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" [(ngModel)]="nome"
-                            required>
-                    </div>
-                </div>
-                }
-
                 <div class="campo">
                     <label for="email">E-mail</label>
                     <div class="input-container">
-                        <input type="email" id="email" name="email" placeholder="seu@email.com" [(ngModel)]="email"
-                            required>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com"
+                            autocomplete="username" [(ngModel)]="email" required>
                     </div>
                 </div>
 
@@ -76,37 +53,25 @@
                     <label for="senha">Senha</label>
                     <div class="input-container">
                         <input [type]="senhaVisivel ? 'text' : 'password'" id="senha" name="senha"
-                            placeholder="Digite sua senha" [(ngModel)]="senha" required>
+                            placeholder="Digite sua senha" autocomplete="current-password"
+                            [(ngModel)]="senha" required>
                         <button type="button" class="mostrar-senha" (click)="alternarSenha()">
                             {{ senhaVisivel ? '◌' : '◉' }}
                         </button>
                     </div>
                 </div>
 
-                @if (modo() === 'cadastrar') {
-                <div class="campo confirmar" style="display: block;">
-                    <label for="confirmarSenha">Confirmar senha</label>
-                    <div class="input-container">
-                        <input type="password" id="confirmarSenha" name="confirmarSenha"
-                            placeholder="Digite novamente sua senha" [(ngModel)]="confirmarSenha">
-                    </div>
-                </div>
-                }
-
                 <button type="submit" class="botao" [disabled]="carregando()">
-                    <span></span>
-                    {{ modo() === 'entrar' ? 'Entrar no Sistema' : 'Criar minha conta' }}
+                    {{ carregando() ? 'Entrando...' : 'Entrar no Sistema' }}
                 </button>
 
                 @if (mensagem()) {
-                <div class="mensagem" style="display: block;">{{ mensagem() }}</div>
+                <div class="mensagem">{{ mensagem() }}</div>
                 }
 
-                @if (modo() === 'entrar') {
                 <button type="button" class="esqueci" (click)="esqueciSenha()">
                     Esqueceu sua senha?
                 </button>
-                }
 
             </form>
 
